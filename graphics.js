@@ -240,7 +240,8 @@ var Graphics = ( function () {
 		str += 'ElapsedTime = ' + elapseTime.toFixed(2) + ', ';
 		str += 'animRemainTime = ' + animRemainTime.toFixed(2) + ', ';
 		str += 'bird.v = ' + bird.v.toFixed(2) + ', bird.y = ' + bird.y.toFixed(2) + ', ';
-		str += 'score: = ' + score + ', died?' +died + '<br>';
+		str += 'pillars[0].x=' + pillars[0].x.toFixed(2) + ', ';
+		str += 'score: = ' + score + ', max' + max_score + '<br>';
 		Graphics.setStatus(str);
 		if (Math.round(elapseTime*10) % 10 == 0) {
 			Graphics.setLog('...');
