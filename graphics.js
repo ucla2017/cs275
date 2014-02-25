@@ -17,6 +17,8 @@ var Graphics = ( function () {
 
 	var directionalLight, pointLight;
 
+	var fovyLine1, fovyLine2;
+
 
 	var PillarHeight = 400;
 
@@ -89,6 +91,14 @@ var Graphics = ( function () {
 			birdBox.position.set(0, 0, 0);
 			scene.add( birdBox );
 
+			// create fovy line
+			var fovyLen = 1000;
+			var fovyLineX = fovyLen * Math.cos(bird.fovy * Math.PI / 360);
+			var fovyLineY = fovyLen * Math.sin(bird.fovy * Math.PI / 360);
+			fovyLine1 = createAxis(vertex(0, 0, 0), vertex(fovyLineX, fovyLineY, 0), 0xFFFFFF);
+			fovyLine2 = createAxis(vertex(0, 0, 0), vertex(fovyLineX, -fovyLineY, 0), 0xFFFFFF);		
+
+
 			//Create axis (point1, point2, colour)
 			var axisLength = 1000;
 			createAxis(vertex(-axisLength, 0, 0), vertex(axisLength, 0, 0), 0x0000FF);
@@ -103,8 +113,10 @@ var Graphics = ( function () {
 				var line, lineGeometry = new THREE.Geometry(),
 				lineMat = new THREE.LineBasicMaterial({color: color, lineWidth: 1});
 				lineGeometry.vertices.push(p1, p2);
+				lineGeometry.dynamic = true;
 				line = new THREE.Line(lineGeometry, lineMat);
 				scene.add(line);
+				return lineGeometry;
 			}
 
 			// Skybox
@@ -231,6 +243,16 @@ var Graphics = ( function () {
 
 		updateCylinders(pillars);
 
+		//var fovyLineX = fovyLen * Math.cos(bird.fovy * Math.PI / 360);
+		var fovyLen = 1000;
+		var fovyLineY = fovyLen * Math.sin(bird.fovy * Math.PI / 360);
+		fovyLine1.vertices[ 0 ].y = bird.y;
+		fovyLine1.vertices[ 1 ].y = bird.y + fovyLineY;
+		fovyLine2.vertices[ 0 ].y = bird.y;
+		fovyLine2.vertices[ 1 ].y = bird.y - fovyLineY;
+		fovyLine1.verticesNeedUpdate = true;
+		fovyLine2.verticesNeedUpdate = true;
+
 		// animate bird		
 		//birdBox.scale.set( bird.w, bird.h, bird.h);
 		birdBox.position.x = -bird.w / 2;
@@ -305,6 +327,9 @@ var Graphics = ( function () {
 
 	Graphics.setLog = function (text) {
 		document.getElementById('log').innerHTML = text;
+	};
+
+	Graphics.menu = function () {
 	};
 
 	return Graphics;

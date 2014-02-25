@@ -91,15 +91,19 @@
 			}
 
 			function animate() {				
+
 				requestAnimationFrame( animate );
+
+				var delta = clock.getDelta();
+				var elapseTime = clock.getElapsedTime();
+
 				switch (state) {
 					case STATUS.MENU ://menu
 						Graphics.menu();
+						Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						break;
 					case STATUS.GAME ://game
 					case STATUS.DEBUG ://debug
-						var delta = clock.getDelta();
-						var elapseTime = clock.getElapsedTime();
 						var results = Controller.update(delta);
 						if (results[1]) {
 							Graphics.flapWings();
