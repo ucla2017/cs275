@@ -1,5 +1,3 @@
-
-
 //global variable
 var numPillar = 10;
 var numVisiblePillar = 2;
@@ -14,23 +12,20 @@ var score = 0;		//score of the game
 var Controller = { REVISION: '01' };
 
 //an object is a function
-<<<<<<< HEAD
 function Bird(r, y, v, fovy)
 {
 	this.r = r;
 	this.y = y;
 	this.v = v;
-	this.w = 2;
-	this.h = 1;
 	this.fovy = fovy;//degree
-=======
+}
+
 function Bird(y, w, h, v, fovy)
 {	
 	this.y = y;				//position of eyes = upper-right corner = (0, y)
 	this.w = w, this.h = h;	//lower-left corner of the body = (-w, y-h)
 	this.v = v;				//velocity in y-axis
 	this.fovy = fovy;		//in degree
->>>>>>> change description of bird and related functions
 }
 var bird = new Bird(0, 2, 1, 0, 60);
 
