@@ -20,7 +20,7 @@ var Graphics = ( function () {
 
 	var cylinderHeight = 40;
 
-	Graphics.init = function (container) {
+	Graphics.init = function (container, bird) {
 			camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 100000 );
 			camera.position.z = 50;
 
@@ -132,9 +132,9 @@ var Graphics = ( function () {
 				meshAnim.duration = 1000;
 				meshAnim.time = animBeginTime;
 
-				var s = 0.1;
+				var s = 0.1 * bird.h;
 				meshAnim.scale.set( s, s, s );
-				meshAnim.position.set(0, 0, 0);
+				//meshAnim.position.set(0, 0, 0);
 				meshAnim.position = birdBox.position;
 				meshAnim.rotation.y = Math.PI / 2;
 
@@ -200,6 +200,8 @@ var Graphics = ( function () {
 
 				morph = morphs[ i ];
 				morph.updateAnimation( 1000 * delta );
+				var s = 0.1 * bird.h;
+				morph.scale.set( s, s, s );
 				morph.position.x = birdBox.position.x;
 				morph.position.y = birdBox.position.y;
 			}
