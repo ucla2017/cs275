@@ -79,8 +79,9 @@
 				document.body.appendChild( container );
 
 				//
-				Graphics.init( container, bird);
 				Controller.init();
+				Graphics.init( container, bird);
+
 
 				window.addEventListener( 'resize', Graphics.onWindowResize, false );
 				document.addEventListener( 'keydown', onKeyDown, false );

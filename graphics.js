@@ -36,7 +36,8 @@ var Graphics = ( function () {
 
 			var geometry = new THREE.CylinderGeometry( radiusTop, radiusBottom, cylinderHeight, segmentsRadius, segmentsHeight);
 
-			var gh = "https://raw.github.com/jiangong01/cs275/master/"
+			//var gh = "https://raw.github.com/jiangong01/cs275/master/"
+			var gh = ""
 			var path = "textures/cube/skybox/";
 			var format = '.jpg';
 			var urls = [
@@ -65,11 +66,31 @@ var Graphics = ( function () {
 
 			}
 
-			birdBox = new THREE.BoxHelper();
-			birdBox.material.color.setRGB( 1, 0, 0 );
+			birdBox = new THREE.Mesh(new THREE.CubeGeometry(bird.w, bird.h, bird.h), new THREE.MeshBasicMaterial({
+        							wireframe: true,
+        							color: 'red'
+      								}));
 			birdBox.scale.set( 1, 1, 1 );
 			birdBox.position.set(0, 0, 0);
 			scene.add( birdBox );
+
+			//Create axis (point1, point2, colour)
+			var axisLength = 1000;
+			createAxis(vertex(-axisLength, 0, 0), vertex(axisLength, 0, 0), 0x0000FF);
+    		createAxis(vertex(0, -axisLength, 0), vertex(0, axisLength, 0), 0x00FF00);
+    		createAxis(vertex(0, 0, -axisLength), vertex(0, 0, axisLength), 0xFF0000);
+
+			function vertex(x,y,z){ 
+            	return new THREE.Vertex(new THREE.Vector3(x,y,z)); 
+    		}
+
+			function createAxis(p1, p2, color){
+				var line, lineGeometry = new THREE.Geometry(),
+				lineMat = new THREE.LineBasicMaterial({color: color, lineWidth: 1});
+				lineGeometry.vertices.push(p1, p2);
+				line = new THREE.Line(lineGeometry, lineMat);
+				scene.add(line);
+			}
 
 			// Skybox
 			initSkybox(textureCube);
@@ -132,9 +153,8 @@ var Graphics = ( function () {
 				meshAnim.duration = 1000;
 				meshAnim.time = animBeginTime;
 
-				var s = 0.1 * bird.h;
+				var s = 0.05 * bird.h;
 				meshAnim.scale.set( s, s, s );
-				//meshAnim.position.set(0, 0, 0);
 				meshAnim.position = birdBox.position;
 				meshAnim.rotation.y = Math.PI / 2;
 
@@ -188,7 +208,7 @@ var Graphics = ( function () {
 
 		// animate bird
 		
-		birdBox.scale.set( bird.w, bird.h, bird.h);
+		//birdBox.scale.set( bird.w, bird.h, bird.h);
 		birdBox.position.x = -bird.w / 2;
 		birdBox.position.y = bird.y - bird.h / 2;
 
@@ -200,7 +220,7 @@ var Graphics = ( function () {
 
 				morph = morphs[ i ];
 				morph.updateAnimation( 1000 * delta );
-				var s = 0.1 * bird.h;
+				var s = 0.05 * bird.h;
 				morph.scale.set( s, s, s );
 				morph.position.x = birdBox.position.x;
 				morph.position.y = birdBox.position.y;
