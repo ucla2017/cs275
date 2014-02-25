@@ -8,7 +8,6 @@ var k_Vmove = -10;		//constant velocity on X-axis of pillars
 //global variable
 var score = 0;			//score of the game
 var max_score = 0;		//max score of the game
-var died = 0;			//
 var pillars = [];		//the queue for pillars
 var visible = [16];		//the visible data for ML
 
@@ -33,7 +32,8 @@ function Pillar(x)
 }
 
 //initialization before a new game
-Controller.init = function() {	
+Controller.init = function() 
+{	
 	while(pillars.length > 0) pillars.pop();
 	for(var i = 0, x = k_Gap * 4; i < k_N; ++i) {
 		pillars.push(new Pillar(x));
@@ -42,18 +42,8 @@ Controller.init = function() {
 	bird.y = bird.v = score = died = 0;
 }
 
-//update the logic of the game
-Controller.update = function (delta) {	
-	vision();						//check visible
-	var hasJumped = jump();			//has jumped?
-	if (hasJumped) bird.v = k_Vjump;//update bird's speed
-	move(delta);					//update positions	
-	max_score = Math.max(max_score, score);
-	return [collision(), hasJumped];//collision detection
-}
-
 //what the bird can see
-function vision()
+Controller.perception = function perception()
 {
 	var first = 0, second = 1;
 	if (pillars[0].x + pillars[0].w <= 0) first = 1, second = 2;
@@ -86,7 +76,7 @@ function vision()
 }
 
 //update positions
-function move(delta)
+Controller.move = function move(delta)
 {
 	bird.y += delta * (bird.v + k_Gravity * delta / 2);	//s = vt + att/2
 	bird.v += delta * k_Gravity;
@@ -100,10 +90,11 @@ function move(delta)
 	if (pillars.length == 0) pillars.push(new Pillar(k_Gap * 4));
 	for(var i = pillars.length; i < k_N; ++i)
 		pillars.push(new Pillar(pillars[i-1].x + pillars[i-1].w + k_Gap));
+	max_score = Math.max(max_score, score);
 }
 
 //collision detection, return true if the bird hit a pillar
-function collision()
+Controller.collision = function collision()
 {	
 	for(var i = 0; i < k_N; ++i) {
 		if (pillars[i].x > 0) break;	//bird body: (-w, y-h) to (0, y)
@@ -111,11 +102,4 @@ function collision()
 		if (bird.y - bird.h <= pillars[i].y - pillars[i].h/2) return true;	//collapse the lower pillar
 	}
 	return false;
-}
-
-//Hang's task
-function jump()
-{
-	return false;
-	//return (Math.random() < 0.1);
 }

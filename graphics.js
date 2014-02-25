@@ -281,13 +281,17 @@ var Graphics = ( function () {
 		cameraCube.rotation.copy( camera.rotation );
 
 		// update status and log text
-		str = 'mouseX = ' + mouseX + ', mouseY = ' + mouseY + ', ';
-		str += 'delta = ' + delta.toFixed(2) + ', ';
-		str += 'ElapsedTime = ' + elapseTime.toFixed(2) + ', ';
-		str += 'animRemainTime = ' + animRemainTime.toFixed(2) + ', ';
-		str += 'bird.v = ' + bird.v.toFixed(2) + ', bird.y = ' + bird.y.toFixed(2) + ', ';
+		str  = '(' + visible[0].toFixed(2) 	+ ', ' + visible[1].toFixed(2) 	+ ')  ';
+		str += '(' + visible[4].toFixed(2) 	+ ', ' + visible[5].toFixed(2) 	+ ')  ';
+		str += '(' + visible[8].toFixed(2) 	+ ', ' + visible[9].toFixed(2) 	+ ')  ';
+		str += '(' + visible[12].toFixed(2) + ', ' + visible[13].toFixed(2) + ')<br>';
+		str += '(' + visible[2].toFixed(2) 	+ ', ' + visible[3].toFixed(2) 	+ ')  ';
+		str += '(' + visible[6].toFixed(2) 	+ ', ' + visible[7].toFixed(2) 	+ ')  ';
+		str += '(' + visible[10].toFixed(2) + ', ' + visible[11].toFixed(2) + ')  ';
+		str += '(' + visible[14].toFixed(2) + ', ' + visible[15].toFixed(2) + ')<br>';		
+		str += 'bird.y = ' + bird.y.toFixed(2) + ', ';
 		str += 'pillars[0].x=' + pillars[0].x.toFixed(2) + ', ';
-		str += 'score: = ' + score + ', max' + max_score + '<br>';
+		str += 'score = ' + score + ', max = ' + max_score + '<br>';
 		Graphics.setStatus(str);
 		if (Math.round(elapseTime*10) % 10 == 0) {
 			Graphics.setLog('...');

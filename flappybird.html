@@ -54,6 +54,8 @@
 		<script src="graphics.js"></script>
 
 		<script src="controller.js"></script>
+		
+		<script src="learning.js"></script>
 
 		<script>
 
@@ -104,12 +106,14 @@
 						break;
 					case STATUS.GAME ://game
 					case STATUS.DEBUG ://debug
-						var results = Controller.update(delta);
-						if (results[1]) {
+						Controller.perception();		//check visible						
+						if (Learning.jump()) {			//has jumped?
+							bird.v = k_Vjump;//update bird's speed
 							Graphics.flapWings();
 							Graphics.setLog('just jumped');
-						}
-						if (results[0]) //the bird died
+						}						
+						Controller.move(delta);			//update positions
+						if (Controller.collision()) //the bird died
 							state = 0;//back to menu
 						else
 							//Graphics.update(state, mouseX, mouseY, delta, elapseTime, pillars, bird);
@@ -127,8 +131,8 @@
 			function onKeyDown ( event ) {
 
 				switch (event.keyCode ) {
-					case 32:
-					case 70: //f
+					case 32: //space
+					case 70: //f: fly
 						bird.v = k_Vjump;
 						Graphics.flapWings();
 						Graphics.setLog('<strong>f</strong> key pressed');
