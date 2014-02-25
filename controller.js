@@ -3,7 +3,7 @@
 //global variable
 var numPillar = 10;
 var numVisiblePillar = 2;
-var safeDis = 10;	//size of no pillar area
+var gap = 10;		//the gap between pillars
 var pillars = [];	//the queue for pillars
 var visible = [16];	//the visible data for ML
 var gravity = -0.01;//(mm/ms^2)
@@ -14,6 +14,7 @@ var score = 0;		//score of the game
 var Controller = { REVISION: '01' };
 
 //an object is a function
+<<<<<<< HEAD
 function Bird(r, y, v, fovy)
 {
 	this.r = r;
@@ -22,25 +23,34 @@ function Bird(r, y, v, fovy)
 	this.w = 2;
 	this.h = 1;
 	this.fovy = fovy;//degree
+=======
+function Bird(y, w, h, v, fovy)
+{	
+	this.y = y;				//position of eyes = upper-right corner = (0, y)
+	this.w = w, this.h = h;	//lower-left corner of the body = (-w, y-h)
+	this.v = v;				//velocity in y-axis
+	this.fovy = fovy;		//in degree
+>>>>>>> change description of bird and related functions
 }
-var bird = new Bird(1, 0, 0, 60);
+var bird = new Bird(0, 2, 1, 0, 60);
 
 function Pillar(x)
 {
 	//fixed width, height, disBetweenPillar
 	this.x = x;
 	this.y = (Math.random() - 0.5) * 20;
-	this.w = 3;
-	this.h = 4;
+	this.w = 5;
+	this.h = 6;
 }
 
 Controller.init = function() {
-	//initialization		
-	for(var i = 0, x = safeDis; i < numPillar; ++i) {
+	//initialization
+	while(pillars.length > 0) pillars.pop();
+	for(var i = 0, x = gap + gap; i < numPillar; ++i) {
 		pillars.push(new Pillar(x));
-		x += pillars[i].w + 6;//disBetweenPillar
+		x += pillars[i].w + gap;
 	}
-	score = 0;
+	bird.y = bird.v = score = 0;
 }
 
 //call main when user start the game
@@ -50,11 +60,12 @@ Controller.update = function (delta) {
 	//update the bird
 	hasJumped = jump(visible[16]);
 	if (hasJumped) bird.v = vJump;
-	update(delta);
+	move(delta);
 	//collapse detection
 	return [collision(), hasJumped];
 }
 
+//what the bird can see
 function vision()
 {
 	var first = 0, second = 1;
@@ -87,33 +98,28 @@ function vision()
 	}
 }
 
-function update(delta)
+function move(delta)
 {
 	bird.y += delta * (bird.v + gravity * delta / 2);	//s = vt + att/2
 	bird.v += delta * gravity;
 	//update the pillars
 	for(var i = 0; i < numPillar; ++i) 
 		pillars[i].x += delta * vMove;
-	while(pillars.length > 0 && pillars[0].x + pillars[0].w <= -bird.r) {
+	while(pillars.length > 0 && pillars[0].x + pillars[0].w <= -bird.w) {
 		pillars.shift();
 		++score;
 	}
-	if (pillars.length == 0) pillars.push(new Pillar(safeDis));
+	if (pillars.length == 0) pillars.push(new Pillar(gap + gap));
 	for(var i = pillars.length; i < numPillar; ++i)
-		pillars.push(new Pillar(pillars[i-1].x + 9));	
+		pillars.push(new Pillar(pillars[i-1].x + pillars[i-1].w + gap));	
 }
 
 function collision()
-{
-	var dx, dy;
+{	
 	for(var i = 0; i < numPillar; ++i) {
-		if (pillars[i].x > bird.r) break;
-		if (bird.y <= pillars[i].y - pillars[i].h/2 || bird.y >= pillars[i].y + pillars[i].h/2) return true;
-		if (pillars[i].x <= 0 && 0 <= pillars[i].x + pillars[i].w && 
-			(bird.y <= pillars[i].y - pillars[i].h/2 + bird.r || bird.y >= pillars[i].y + pillars[i].h/2 - bird.r)) return true;
-		dx = (0 <= pillars[i].x ? pillars[i].x : pillars[i].x + pillars[i].w);
-		dy = bird.y - (bird.y <= pillars[i].y ? pillars[i].y - pillars[i].h/2 : pillars[i].y + pillars[i].h/2);
-		if (dx * dx + dy * dy <= bird.r * bird.r) return true;
+		if (pillars[i].x > 0) break;	//bird body: (-w, y-h) to (0, y)
+		if (bird.y >= pillars[i].y + pillars[i].h/2) return true;			//collapse the upper pillar
+		if (bird.y - bird.h <= pillars[i].y - pillars[i].h/2) return true;	//collapse the lower pillar		
 	}
 	return false;
 }
@@ -122,9 +128,4 @@ function collision()
 function jump()
 {
 	return (Math.random < 0.5)	
-}
-
-//Jian's task
-function display()
-{
 }
