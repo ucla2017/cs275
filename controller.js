@@ -1,6 +1,6 @@
 //constant
 var k_N = 20;			//# of pillars
-var k_Gap = 10;			//the gap between pillars
+var k_Gap = 12;			//the gap between pillars
 var k_Gravity = -100;	//gravity
 var k_Vjump = 32;		//constant velocity on Y-axis of the bird
 var k_Vmove = -10;		//constant velocity on X-axis of pillars
@@ -27,9 +27,9 @@ var bird = new Bird(0, 2, 1, 0, 60);
 function Pillar(x)
 {	
 	this.x = x;
-	this.y = (Math.random() - 0.5) * 48;
+	this.y = (Math.random() - 0.5) * 25;
 	this.w = 5;		//fixed width
-	this.h = 12;	//fixed height of the hole 
+	this.h = 8;	//fixed height of the hole 
 }
 
 //initialization before a new game
