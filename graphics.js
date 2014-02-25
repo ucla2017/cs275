@@ -6,7 +6,7 @@ var Graphics = ( function () {
 	var camera, scene, renderer;
 	var cameraCube, sceneCube;
 
-	var mesh, lightMesh, geometry;
+	var mesh, lightMesh;
 	var spheres = [];
 	var birdBox;
 
@@ -18,9 +18,9 @@ var Graphics = ( function () {
 	var directionalLight, pointLight;
 
 
-	var cylinderHeight = 40;
+	var PillarHeight = 400;
 
-	Graphics.init = function (container, bird) {
+	Graphics.init = function (container, bird, pillars) {
 			camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 100000 );
 			camera.position.z = 50;
 
@@ -28,13 +28,6 @@ var Graphics = ( function () {
 
 			scene = new THREE.Scene();
 			sceneCube = new THREE.Scene();
-
-			var radiusTop = 1.5;
-			var segmentsRadius = 50;
-			var segmentsHeight = 50;
-			var radiusBottom = radiusTop;
-
-			var geometry = new THREE.CylinderGeometry( radiusTop, radiusBottom, cylinderHeight, segmentsRadius, segmentsHeight);
 
 			//var gh = "https://raw.github.com/jiangong01/cs275/master/"
 			var gh = ""
@@ -50,21 +43,43 @@ var Graphics = ( function () {
 			var material = new THREE.MeshBasicMaterial( { color: 0xffffff, envMap: textureCube, refractionRatio: 0.95 } );
 			var material2 = new THREE.MeshPhongMaterial( { ambient: 0x4EB81A, color: 0x4EB81A, specular: 0x4EB81A, shininess: 30, shading: THREE.FlatShading } );
 
-			for ( var i = 0; i < 20; i ++ ) {
+			createCylinders(pillars, material2);
 
-				var mesh = new THREE.Mesh( geometry, material2 );
+			function createCylinders(pillars, material) {
+				
 
-				mesh.position.x = Math.random() * 100 - 50;
-				mesh.position.y = Math.random() * 100 - 50;
-				mesh.position.z = Math.random() * 100 - 50;
+				for ( var i = 0; i < pillars.length; i ++ ) {
 
-				mesh.scale.x = mesh.scale.y = mesh.scale.z = 1;
+					var p = pillars[ i ];
 
-				scene.add( mesh );
+					makeOneCylinder(material);
 
-				spheres.push( mesh );
+					makeOneCylinder(material);					
+					
+				}
 
+				function makeOneCylinder(material) {
+
+					var radiusTop = 1;
+					var segmentsRadius = 50;
+					var segmentsHeight = 50;
+					var radiusBottom = radiusTop;
+					var height = 1;
+
+					var geometry = new THREE.CylinderGeometry( radiusTop, radiusBottom, height, segmentsRadius, segmentsHeight);
+
+					var mesh = new THREE.Mesh( geometry, material );
+
+					mesh.scale.set(1, 1, 1);
+
+					scene.add( mesh );
+
+					spheres.push( mesh );
+				}
 			}
+
+
+			updateCylinders(pillars);
 
 			birdBox = new THREE.Mesh(new THREE.CubeGeometry(bird.w, bird.h, bird.h), new THREE.MeshBasicMaterial({
         							wireframe: true,
@@ -189,25 +204,34 @@ var Graphics = ( function () {
 
 	};
 
-	Graphics.update = function (mouseX, mouseY, delta, elapseTime, pillars, bird) {
+	function updateCylinders(pillars) {
+		for ( var i = 0; i < pillars.length; i ++ ) {
 
-
-		for ( var i = 0, il = 10; i < il; i += 1 ) {
+			var p = pillars[ i ];
 
 			var sphere1 = spheres[ i*2 ];
 			var sphere2 = spheres[ i*2 + 1 ];
 
-			sphere1.position.x = pillars[i].x;
-			sphere1.position.y = pillars[i].y + pillars[i].h/2 + cylinderHeight / 2;
+			var h1 = PillarHeight / 2 - p.y + p.h / 2;
+			sphere1.position.x = p.x + p.w / 2;
+			sphere1.position.y = p.y + p.h/2 + h1 / 2;
 			sphere1.position.z = 0;
+			sphere1.scale.set( p.w / 2, h1, p.w / 2 );
 
-			sphere2.position.x = pillars[i].x;
-			sphere2.position.y = pillars[i].y - pillars[i].h/2 - cylinderHeight / 2;
+			var h2 = p.y - p.h / 2 + PillarHeight / 2;
+			sphere2.position.x = p.x + p.w / 2;
+			sphere2.position.y = p.y - p.h/2 - h2 / 2;
 			sphere2.position.z = 0;
-		}
+			sphere2.scale.set( p.w / 2, h2, p.w / 2 );
 
-		// animate bird
-		
+		}
+	}
+
+	Graphics.update = function (mouseX, mouseY, delta, elapseTime, pillars, bird) {
+
+		updateCylinders(pillars);
+
+		// animate bird		
 		//birdBox.scale.set( bird.w, bird.h, bird.h);
 		birdBox.position.x = -bird.w / 2;
 		birdBox.position.y = bird.y - bird.h / 2;
@@ -240,7 +264,8 @@ var Graphics = ( function () {
 		str += 'ElapsedTime = ' + elapseTime.toFixed(2) + ', ';
 		str += 'animRemainTime = ' + animRemainTime.toFixed(2) + ', ';
 		str += 'bird.v = ' + bird.v.toFixed(2) + ', bird.y = ' + bird.y.toFixed(2) + ', ';
-		str += 'score: = ' + score + ', died?' +died + '<br>';
+		str += 'score: = ' + score + ', died?' +died + ', ';
+		str += 'pillars[0].x = ' + pillars[0].x.toFixed(2) + '<br>';
 		Graphics.setStatus(str);
 		if (Math.round(elapseTime*10) % 10 == 0) {
 			Graphics.setLog('...');
