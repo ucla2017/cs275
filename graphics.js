@@ -8,6 +8,7 @@ var Graphics = ( function () {
 
 	var mesh, lightMesh, geometry;
 	var spheres = [];
+	var birdBox;
 
 	var morphs = [];
 	
@@ -35,12 +36,13 @@ var Graphics = ( function () {
 
 			var geometry = new THREE.CylinderGeometry( radiusTop, radiusBottom, cylinderHeight, segmentsRadius, segmentsHeight);
 
+			var gh = "https://raw.github.com/jiangong01/cs275/master/"
 			var path = "textures/cube/skybox/";
 			var format = '.jpg';
 			var urls = [
-				path + 'px' + format, path + 'nx' + format,
-				path + 'py' + format, path + 'ny' + format,
-				path + 'pz' + format, path + 'nz' + format
+				gh + path + 'px' + format, gh + path + 'nx' + format,
+				gh + path + 'py' + format, gh + path + 'ny' + format,
+				gh + path + 'pz' + format, gh + path + 'nz' + format
 			];
 
 			var textureCube = THREE.ImageUtils.loadTextureCube( urls, new THREE.CubeRefractionMapping() );
@@ -62,6 +64,12 @@ var Graphics = ( function () {
 				spheres.push( mesh );
 
 			}
+
+			birdBox = new THREE.BoxHelper();
+			birdBox.material.color.setRGB( 1, 0, 0 );
+			birdBox.scale.set( 1, 1, 1 );
+			birdBox.position.set(0, 0, 0);
+			scene.add( birdBox );
 
 			// Skybox
 			initSkybox(textureCube);
@@ -124,10 +132,10 @@ var Graphics = ( function () {
 				meshAnim.duration = 1000;
 				meshAnim.time = animBeginTime;
 
-				var s = 0.1;
+				var s = 0.05;
 				meshAnim.scale.set( s, s, s );
 				meshAnim.position.set(0, 0, 0);
-				//meshAnim.position.y = 0;
+				meshAnim.position = birdBox.position;
 				meshAnim.rotation.y = Math.PI / 2;
 
 				meshAnim.castShadow = true;
@@ -180,6 +188,8 @@ var Graphics = ( function () {
 
 		// animate bird
 		
+		birdBox.position.x = -bird.w / 2;
+		birdBox.position.y = bird.y - bird.h / 2;
 
 		if (animRemainTime > 0) {
 
@@ -189,7 +199,8 @@ var Graphics = ( function () {
 
 				morph = morphs[ i ];
 				morph.updateAnimation( 1000 * delta );
-				morph.position.y = bird.y;
+				morph.position.x = birdBox.position.x;
+				morph.position.y = birdBox.position.y;
 			}
 		}
 
