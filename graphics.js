@@ -219,8 +219,8 @@ var Graphics = ( function () {
 		str += 'delta = ' + delta.toFixed(2) + ', ';
 		str += 'ElapsedTime = ' + elapseTime.toFixed(2) + ', ';
 		str += 'animRemainTime = ' + animRemainTime.toFixed(2) + ', ';
-		str += 'bird.x = ' + bird.x + ', bird.y = ' + bird.y.toFixed(2) + ', ';
-		str += 'pillars[0].x = ' + pillars[0].x.toFixed(2) + '<br>';
+		str += 'bird.v = ' + bird.v.toFixed(2) + ', bird.y = ' + bird.y.toFixed(2) + ', ';
+		str += 'score: = ' + score + ', died?' +died + '<br>';
 		Graphics.setStatus(str);
 		if (Math.round(elapseTime*10) % 10 == 0) {
 			Graphics.setLog('...');

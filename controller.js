@@ -1,13 +1,15 @@
+//constant
+var k_N = 20;			//# of pillars
+var k_Gap = 10;			//the gap between pillars
+var k_Gravity = -100;	//gravity
+var k_Vjump = 32;		//constant velocity on Y-axis of the bird
+var k_Vmove = -10;		//constant velocity on X-axis of pillars
+
 //global variable
-var numPillar = 10;
-var numVisiblePillar = 2;
-var gap = 10;		//the gap between pillars
-var pillars = [];	//the queue for pillars
-var visible = [16];	//the visible data for ML
-var gravity = -0.01;//(mm/ms^2)
-var vJump = 10;		//constant velocity on Y-axis of the bird  	(m/s)
-var vMove = -1;	//constant velocity on X-axis of pillars	(m/s)
-var score = 0;		//score of the game
+var score = 0;			//score of the game
+var died = 0;			//
+var pillars = [];		//the queue for pillars
+var visible = [16];		//the visible data for ML
 
 var Controller = { REVISION: '01' };
 
@@ -22,34 +24,30 @@ function Bird(y, w, h, v, fovy)
 var bird = new Bird(0, 2, 1, 0, 60);
 
 function Pillar(x)
-{
-	//fixed width, height, disBetweenPillar
+{	
 	this.x = x;
-	this.y = (Math.random() - 0.5) * 20;
-	this.w = 5;
-	this.h = 6;
+	this.y = (Math.random() - 0.5) * 48;
+	this.w = 5;		//fixed width
+	this.h = 12;	//fixed height of the hole 
 }
 
-Controller.init = function() {
-	//initialization
+//initialization before a new game
+Controller.init = function() {	
 	while(pillars.length > 0) pillars.pop();
-	for(var i = 0, x = gap + gap; i < numPillar; ++i) {
+	for(var i = 0, x = k_Gap * 4; i < k_N; ++i) {
 		pillars.push(new Pillar(x));
-		x += pillars[i].w + gap;
+		x += pillars[i].w + k_Gap;
 	}
-	bird.y = bird.v = score = 0;
+	bird.y = bird.v = score = died = 0;
 }
 
-//call main when user start the game
-Controller.update = function (delta) {
-	//check visible
-	vision();
-	//update the bird
-	hasJumped = jump(visible[16]);
-	if (hasJumped) bird.v = vJump;
-	move(delta);
-	//collapse detection
-	return [collision(), hasJumped];
+//update the logic of the game
+Controller.update = function (delta) {	
+	vision();						//check visible
+	var hasJumped = jump();			//hasJumped?
+	if (hasJumped) bird.v = k_Vjump;//update bird's speed
+	move(delta);					//update positions
+	return [collision(), hasJumped];//collision detection
 }
 
 //what the bird can see
@@ -85,28 +83,30 @@ function vision()
 	}
 }
 
+//update positions
 function move(delta)
 {
-	bird.y += delta * (bird.v + gravity * delta / 2);	//s = vt + att/2
-	bird.v += delta * gravity;
+	bird.y += delta * (bird.v + k_Gravity * delta / 2);	//s = vt + att/2
+	bird.v += delta * k_Gravity;
 	//update the pillars
-	for(var i = 0; i < numPillar; ++i) 
-		pillars[i].x += delta * vMove;
+	for(var i = 0; i < k_N; ++i) 
+		pillars[i].x += delta * k_Vmove;
 	while(pillars.length > 0 && pillars[0].x + pillars[0].w <= -bird.w) {
 		pillars.shift();
 		++score;
 	}
-	if (pillars.length == 0) pillars.push(new Pillar(gap + gap));
-	for(var i = pillars.length; i < numPillar; ++i)
-		pillars.push(new Pillar(pillars[i-1].x + pillars[i-1].w + gap));	
+	if (pillars.length == 0) pillars.push(new Pillar(k_Gap * 4));
+	for(var i = pillars.length; i < k_N; ++i)
+		pillars.push(new Pillar(pillars[i-1].x + pillars[i-1].w + k_Gap));
 }
 
+//collision detection, return true if the bird hit a pillar
 function collision()
 {	
-	for(var i = 0; i < numPillar; ++i) {
+	for(var i = 0; i < k_N; ++i) {
 		if (pillars[i].x > 0) break;	//bird body: (-w, y-h) to (0, y)
 		if (bird.y >= pillars[i].y + pillars[i].h/2) return true;			//collapse the upper pillar
-		if (bird.y - bird.h <= pillars[i].y - pillars[i].h/2) return true;	//collapse the lower pillar		
+		if (bird.y - bird.h <= pillars[i].y - pillars[i].h/2) return true;	//collapse the lower pillar
 	}
 	return false;
 }
@@ -114,5 +114,6 @@ function collision()
 //Hang's task
 function jump()
 {
-	return (Math.random < 0.5)	
+	return false;
+	//return (Math.random() < 0.1);
 }

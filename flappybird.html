@@ -111,7 +111,9 @@
 					Graphics.flapWings();
 					Graphics.setLog('just jumped');
 				}
-
+				if (rets[0]) {
+					died = 1;
+				}				
 				Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 				
 			}
@@ -121,7 +123,7 @@
 				switch ( event.keyCode ) {
 
 					case 70: /*f*/
-
+					bird.v = k_Vjump;
 					Graphics.flapWings();
 					Graphics.setLog('<strong>f</strong> key pressed');
 					break;
