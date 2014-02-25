@@ -58,17 +58,17 @@
 		<script>
 
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
-
 			var container;
-
 			var clock = new THREE.Clock();
-
+			var STATUS = {};
+			STATUS.MENU = 0, STATUS.GAME = 1, STATUS.DEBUG = 2, STATUS.LEARNING = 3, STATUS.SHOWTIME = 4;
+			var state = STATUS.MENU;	//state of the game(0: menu, 1: game, 2: debug, 3: learning, 4: showtime)			
 			var mouseX = 0, mouseY = 0;
 
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
 
-			document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+			document.addEventListener('mousemove', onDocumentMouseMove, false );
 
 			init();
 			animate();
@@ -77,65 +77,72 @@
 
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
-
-				//
+				
 				Controller.init();
 				Graphics.init( container, bird, pillars);
-
 
 				window.addEventListener( 'resize', Graphics.onWindowResize, false );
 				document.addEventListener( 'keydown', onKeyDown, false );
 			}
 
-			
-
-			
-
 			function onDocumentMouseMove(event) {
-
 				mouseX = ( event.clientX - windowHalfX ) * 10;
 				mouseY = ( event.clientY - windowHalfY ) * 10;
-
 			}
 
-			//
-
-			function animate() {
-
+			function animate() {				
 				requestAnimationFrame( animate );
-
-				var delta = clock.getDelta();
-				var elapseTime = clock.getElapsedTime();
-
-				var rets = Controller.update(delta);
-				if (rets[1]) {
-					Graphics.flapWings();
-					Graphics.setLog('just jumped');
-				}
-				if (rets[0]) {
-					died = 1;
-				}				
-				Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
-				
+				switch (state) {
+					case STATUS.MENU ://menu
+						Graphics.menu();
+						break;
+					case STATUS.GAME ://game
+					case STATUS.DEBUG ://debug
+						var delta = clock.getDelta();
+						var elapseTime = clock.getElapsedTime();
+						var results = Controller.update(delta);
+						if (results[1]) {
+							Graphics.flapWings();
+							Graphics.setLog('just jumped');
+						}
+						if (results[0]) //the bird died
+							state = 0;//back to menu
+						else
+							//Graphics.update(state, mouseX, mouseY, delta, elapseTime, pillars, bird);
+							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
+						break;
+					case STATUS.LEARNING ://learning
+						break;
+					case STATUS.SHOWTIME ://showtime
+						break;
+					default:
+						break;				
+				}							
 			}
 
 			function onKeyDown ( event ) {
 
-				switch ( event.keyCode ) {
-
-					case 70: /*f*/
-					bird.v = k_Vjump;
-					Graphics.flapWings();
-					Graphics.setLog('<strong>f</strong> key pressed');
+				switch (event.keyCode ) {
+					case 32:
+					case 70: //f
+						bird.v = k_Vjump;
+						Graphics.flapWings();
+						Graphics.setLog('<strong>f</strong> key pressed');
+						break;
+					case 27://escape
+						state = 0;//back to menu
+						break;
+					case 49://1:game
+					case 50://2:debug				
+					case 51://3:learning
+					case 52://4:showtime
+						Controller.init();
+						state = event.keyCode - 48;
+						break;
+					case 68: //d
+						//dirLight.visible = !dirLight.visible;
 					break;
-
-					case 68: /*d*/
-
-					//dirLight.visible = !dirLight.visible;
-					break;
-
 				}
-
 			}
 
 		</script>

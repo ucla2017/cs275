@@ -7,6 +7,7 @@ var k_Vmove = -10;		//constant velocity on X-axis of pillars
 
 //global variable
 var score = 0;			//score of the game
+var max_score = 0;		//max score of the game
 var died = 0;			//
 var pillars = [];		//the queue for pillars
 var visible = [16];		//the visible data for ML
@@ -44,9 +45,10 @@ Controller.init = function() {
 //update the logic of the game
 Controller.update = function (delta) {	
 	vision();						//check visible
-	var hasJumped = jump();			//hasJumped?
+	var hasJumped = jump();			//has jumped?
 	if (hasJumped) bird.v = k_Vjump;//update bird's speed
-	move(delta);					//update positions
+	move(delta);					//update positions	
+	max_score = Math.max(max_score, score);
 	return [collision(), hasJumped];//collision detection
 }
 
