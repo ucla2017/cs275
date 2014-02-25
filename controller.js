@@ -19,8 +19,8 @@ function Bird(r, y, v, fovy)
 	this.r = r;
 	this.y = y;
 	this.v = v;
-	this.w = 4;
-	this.h = 2;
+	this.w = 2;
+	this.h = 1;
 	this.fovy = fovy;//degree
 }
 var bird = new Bird(1, 0, 0, 60);

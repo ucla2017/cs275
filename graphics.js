@@ -132,7 +132,7 @@ var Graphics = ( function () {
 				meshAnim.duration = 1000;
 				meshAnim.time = animBeginTime;
 
-				var s = 0.05;
+				var s = 0.1;
 				meshAnim.scale.set( s, s, s );
 				meshAnim.position.set(0, 0, 0);
 				meshAnim.position = birdBox.position;
@@ -188,6 +188,7 @@ var Graphics = ( function () {
 
 		// animate bird
 		
+		birdBox.scale.set( bird.w, bird.h, bird.h);
 		birdBox.position.x = -bird.w / 2;
 		birdBox.position.y = bird.y - bird.h / 2;
 
