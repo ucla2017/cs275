@@ -12,6 +12,7 @@ var score = 0;		//score of the game
 var Controller = { REVISION: '01' };
 
 //an object is a function
+<<<<<<< HEAD
 function Bird(r, y, v, fovy)
 {
 	this.r = r;
@@ -20,6 +21,8 @@ function Bird(r, y, v, fovy)
 	this.fovy = fovy;//degree
 }
 
+=======
+>>>>>>> 4e9b3393cecb9880efb57d12bf4cae19fe5a4a07
 function Bird(y, w, h, v, fovy)
 {	
 	this.y = y;				//position of eyes = upper-right corner = (0, y)
