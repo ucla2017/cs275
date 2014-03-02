@@ -15,7 +15,7 @@ var Controller = { REVISION: '01' };
 
 //an object is a function
 function Bird(y, w, h, v, fovy)
-{	
+{
 	this.y = y;				//position of eyes = upper-right corner = (0, y)
 	this.w = w, this.h = h;	//lower-left corner of the body = (-w, y-h)
 	this.v = v;				//velocity in y-axis
@@ -24,16 +24,16 @@ function Bird(y, w, h, v, fovy)
 var bird = new Bird(0, 2, 1, 0, 60);
 
 function Pillar(x)
-{	
+{
 	this.x = x;
 	this.y = (Math.random() - 0.5) * 25;
 	this.w = 5;		//fixed width
-	this.h = 8;	//fixed height of the hole 
+	this.h = 8;	//fixed height of the hole
 }
 
 //initialization before a new game
-Controller.init = function() 
-{	
+Controller.init = function()
+{
 	while(pillars.length > 0) pillars.pop();
 	for(var i = 0, x = k_Gap * 4; i < k_N; ++i) {
 		pillars.push(new Pillar(x));
@@ -66,13 +66,14 @@ Controller.perception = function perception()
 		}
 		//block check
 		for(var j = 0; j < i - 2; j += 4) {
-			if (visible[j] > 0 && 
+			if (visible[j] > 0 &&
 				(visible[i+1] * visible[j] > visible[i] * visible[j+1] || visible[i+1] * visible[j] < visible[i] * visible[j+3])) {
 				visible[i] = -1;
 				break;
 			}
 		}
 	}
+	return visible;
 }
 
 //update positions
@@ -81,7 +82,7 @@ Controller.move = function move(delta)
 	bird.y += delta * (bird.v + k_Gravity * delta / 2);	//s = vt + att/2
 	bird.v += delta * k_Gravity;
 	//update the pillars
-	for(var i = 0; i < k_N; ++i) 
+	for(var i = 0; i < k_N; ++i)
 		pillars[i].x += delta * k_Vmove;
 	while(pillars.length > 0 && pillars[0].x + pillars[0].w <= -bird.w) {
 		pillars.shift();
@@ -95,7 +96,8 @@ Controller.move = function move(delta)
 
 //collision detection, return true if the bird hit a pillar
 Controller.collision = function collision()
-{	
+{
+	if (bird.y < -30 || bird.y > 30) return true;
 	for(var i = 0; i < k_N; ++i) {
 		if (pillars[i].x > 0) break;	//bird body: (-w, y-h) to (0, y)
 		if (bird.y >= pillars[i].y + pillars[i].h/2) return true;			//collapse the upper pillar

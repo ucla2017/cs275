@@ -54,7 +54,7 @@
 		<script src="graphics.js"></script>
 
 		<script src="controller.js"></script>
-		
+
 		<script src="learning.js"></script>
 
 		<script>
@@ -64,7 +64,7 @@
 			var clock = new THREE.Clock();
 			var STATUS = {};
 			STATUS.MENU = 0, STATUS.GAME = 1, STATUS.DEBUG = 2, STATUS.LEARNING = 3, STATUS.SHOWTIME = 4;
-			var state = STATUS.MENU;	//state of the game(0: menu, 1: game, 2: debug, 3: learning, 4: showtime)			
+			var state = STATUS.MENU;	//state of the game(0: menu, 1: game, 2: debug, 3: learning, 4: showtime)
 			var mouseX = 0, mouseY = 0;
 
 			var windowHalfX = window.innerWidth / 2;
@@ -79,7 +79,7 @@
 
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
-				
+
 				Controller.init();
 				Graphics.init( container, bird, pillars);
 
@@ -92,7 +92,7 @@
 				mouseY = ( event.clientY - windowHalfY ) * 10;
 			}
 
-			function animate() {				
+			function animate() {
 
 				requestAnimationFrame( animate );
 
@@ -106,12 +106,12 @@
 						break;
 					case STATUS.GAME ://game
 					case STATUS.DEBUG ://debug
-						Controller.perception();		//check visible						
+						Controller.perception();		//check visible
 						if (Learning.jump()) {			//has jumped?
 							bird.v = k_Vjump;//update bird's speed
 							Graphics.flapWings();
 							Graphics.setLog('just jumped');
-						}						
+						}
 						Controller.move(delta);			//update positions
 						if (Controller.collision()) //the bird died
 							state = 0;//back to menu
@@ -119,13 +119,31 @@
 							//Graphics.update(state, mouseX, mouseY, delta, elapseTime, pillars, bird);
 							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						break;
-					case STATUS.LEARNING ://learning
+					case STATUS.LEARNING: //learning
+						var currentState = Controller.perception();
+						var jump = Learning.jump();
+						if (jump) {
+							bird.v = k_Vjump;
+							Graphics.flapWings();
+							Graphics.setLog('just jumped');
+						}
+						Controller.move(delta);
+						var newState = Controller.perception();
+						var hasDie = Controller.collision();
+						Learning.train(currentState, jump, hasDie, newState);
+						if (hasDie){
+							console.log('Die');
+							Controller.init();			// start over
+						} else {
+							//Graphics.update(state, mouseX, mouseY, delta, elapseTime, pillars, bird);
+							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
+						}
 						break;
 					case STATUS.SHOWTIME ://showtime
 						break;
 					default:
-						break;				
-				}							
+						break;
+				}
 			}
 
 			function onKeyDown ( event ) {
@@ -141,7 +159,7 @@
 						state = 0;//back to menu
 						break;
 					case 49://1:game
-					case 50://2:debug				
+					case 50://2:debug
 					case 51://3:learning
 					case 52://4:showtime
 						Controller.init();
