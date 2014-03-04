@@ -64,7 +64,7 @@
 			var clock = new THREE.Clock();
 			var STATUS = {};
 			STATUS.MENU = 0, STATUS.GAME = 1, STATUS.DEBUG = 2, STATUS.LEARNING = 3, STATUS.SHOWTIME = 4;
-			var state = STATUS.MENU;	//state of the game(0: menu, 1: game, 2: debug, 3: learning, 4: showtime)
+			var state = STATUS.GAME;	//state of the game(0: menu, 1: game, 2: debug, 3: learning, 4: showtime)
 			var mouseX = 0, mouseY = 0;
 
 			var windowHalfX = window.innerWidth / 2;
@@ -73,7 +73,7 @@
 			document.addEventListener('mousemove', onDocumentMouseMove, false );
 
 			init();
-			animate();
+			animateLoop2();
 
 			function init() {
 
@@ -92,12 +92,39 @@
 				mouseY = ( event.clientY - windowHalfY ) * 10;
 			}
 
-			function animate() {
+			function animateLoop1() {
 
-				requestAnimationFrame( animate );
+				requestAnimationFrame( animateLoop1 );
 
 				var delta = clock.getDelta();
 				var elapseTime = clock.getElapsedTime();
+
+				animate(delta, elapseTime);
+
+			}
+
+			function animateLoop2() {
+
+				var delta = 0.0166666;
+
+				var elapseTime = 0;
+
+				function myTimer() { 
+
+					elapseTime += delta;
+
+					animate(delta, elapseTime);
+					//alert(delta.toFixed(2) + ", " + elapseTime.toFixed(2));
+
+					setTimeout(myTimer, delta * 1000);
+
+				}
+
+				myTimer(delta, elapseTime);
+
+			}
+
+			function animate(delta, elapseTime) {
 
 				switch (state) {
 					case STATUS.MENU ://menu
