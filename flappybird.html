@@ -39,7 +39,8 @@
 		<!-- <div id="info"><a href="http://threejs.org" target="_blank">three.js</a> - webgl cube refraction demo. skybox by <a href="http://www.zfight.com/" target="_blank">Jochum Skoglund</a></div> -->
 
 		<div id="footer">
-			press <strong>f</strong> to flap wings
+			1: game, 2: debug, 3: training </br> 
+			press <strong>space</strong> to flap wings
 		</div>
 
 		<div id="status"> status started...</div>
@@ -64,7 +65,7 @@
 			var clock = new THREE.Clock();
 			var STATUS = {};
 			STATUS.MENU = 0, STATUS.GAME = 1, STATUS.DEBUG = 2, STATUS.LEARNING = 3, STATUS.SHOWTIME = 4;
-			var state = STATUS.GAME;	//state of the game(0: menu, 1: game, 2: debug, 3: learning, 4: showtime)
+			var state = STATUS.MENU;	//state of the game(0: menu, 1: game, 2: debug, 3: learning, 4: showtime)
 			var mouseX = 0, mouseY = 0;
 
 			var windowHalfX = window.innerWidth / 2;
@@ -73,7 +74,7 @@
 			document.addEventListener('mousemove', onDocumentMouseMove, false );
 
 			init();
-			animateLoop2();
+			animateLoop1();
 
 			function init() {
 
@@ -116,11 +117,27 @@
 					animate(delta, elapseTime);
 					//alert(delta.toFixed(2) + ", " + elapseTime.toFixed(2));
 
-					setTimeout(myTimer, delta * 1000);
+					setTimeout(myTimer, 10);
 
 				}
 
 				myTimer(delta, elapseTime);
+
+			}
+
+			function animateLoop3() { // No response
+
+				var delta = 0.0166666;
+
+				var elapseTime = 0;
+
+				while (true) {
+
+					elapseTime += delta;
+
+					animate(delta, elapseTime);
+
+				};
 
 			}
 
@@ -132,6 +149,14 @@
 						Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						break;
 					case STATUS.GAME ://game
+						Controller.move(delta);	
+						var hasDie = Controller.collision();
+						Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
+						if (hasDie){
+							state = 0;//back to menu
+							console.log('Die');
+						}
+						break;
 					case STATUS.DEBUG ://debug
 						Controller.perception();		//check visible
 						if (Learning.jump()) {			//has jumped?
@@ -163,7 +188,7 @@
 							Controller.init();			// start over
 						} else {
 							//Graphics.update(state, mouseX, mouseY, delta, elapseTime, pillars, bird);
-							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
+							//Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						}
 						break;
 					case STATUS.SHOWTIME ://showtime
@@ -186,8 +211,18 @@
 						state = 0;//back to menu
 						break;
 					case 49://1:game
+						Controller.init();
+						state = event.keyCode - 48;
+						break;
 					case 50://2:debug
+						Controller.init();
+						state = event.keyCode - 48;
+						break;
 					case 51://3:learning
+						alert("start training, in this process, no Graphics.update()");
+						Controller.init();
+						state = event.keyCode - 48;
+						break;
 					case 52://4:showtime
 						Controller.init();
 						state = event.keyCode - 48;

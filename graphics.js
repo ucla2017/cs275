@@ -281,14 +281,18 @@ var Graphics = ( function () {
 		cameraCube.rotation.copy( camera.rotation );
 
 		// update status and log text
-		str  = '(' + visible[0].toFixed(2) 	+ ', ' + visible[1].toFixed(2) 	+ ')  ';
-		str += '(' + visible[4].toFixed(2) 	+ ', ' + visible[5].toFixed(2) 	+ ')  ';
-		str += '(' + visible[8].toFixed(2) 	+ ', ' + visible[9].toFixed(2) 	+ ')  ';
-		str += '(' + visible[12].toFixed(2) + ', ' + visible[13].toFixed(2) + ')<br>';
-		str += '(' + visible[2].toFixed(2) 	+ ', ' + visible[3].toFixed(2) 	+ ')  ';
-		str += '(' + visible[6].toFixed(2) 	+ ', ' + visible[7].toFixed(2) 	+ ')  ';
-		str += '(' + visible[10].toFixed(2) + ', ' + visible[11].toFixed(2) + ')  ';
-		str += '(' + visible[14].toFixed(2) + ', ' + visible[15].toFixed(2) + ')<br>';		
+		function p(x) {
+			if (x == null) return "NaN";
+			return x.toFixed(2);
+		}
+		str  = '(' + p(visible[0])	+ ', ' + p(visible[1])	+ ')  ';
+		str += '(' + p(visible[4])	+ ', ' + p(visible[5])	+ ')  ';
+		str += '(' + p(visible[8])	+ ', ' + p(visible[9])	+ ')  ';
+		str += '(' + p(visible[12]) + ', ' + p(visible[13]) + ')<br>';
+		str += '(' + p(visible[2])	+ ', ' + p(visible[3])	+ ')  ';
+		str += '(' + p(visible[6])	+ ', ' + p(visible[7])	+ ')  ';
+		str += '(' + p(visible[10]) + ', ' + p(visible[11]) + ')  ';
+		str += '(' + p(visible[14]) + ', ' + p(visible[15]) + ')<br>';		
 		str += 'bird.y = ' + bird.y.toFixed(2) + ', ';
 		str += 'pillars[0].x=' + pillars[0].x.toFixed(2) + ', ';
 		str += 'score = ' + score + ', max = ' + max_score + '<br>';
