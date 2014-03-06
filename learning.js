@@ -26,7 +26,7 @@ QLearningController.prototype.update = function (currentState, action, reward, n
     }
     else
     {
-        console.log('no next state: ' + nextState);
+        // console.log('no next state: ' + nextState);
     }
 
     if (this.Q[currentState] == null){
@@ -39,7 +39,8 @@ QLearningController.prototype.update = function (currentState, action, reward, n
         this.alpha * (reward + this.gamma * maxFutureReward) +
         ((1-this.alpha) * this.Q[currentState][action]);
     var after = this.Q[currentState][action];
-    console.log(before.toFixed(2) + "  -> " + after.toFixed(2) + ' ' + maxFutureReward);
+    // console.log(before.toFixed(2) + "  -> " + after.toFixed(2) + ' ' + maxFutureReward);
+    alert('current state:' + currentState + '\n Q: ' + this.Q[currentState][action]);
 }
 
 QLearningController.prototype.getAction = function (currentState) {
@@ -75,11 +76,16 @@ QLearningController.prototype.convertState = function (visible) {
     var stateString = "";
     for (var i = 0; i < 8; i++) {
         if (visible[i*2] == -1){
-            stateString += '-1,-1|';
+            if (visible[i*2+1] > 0){
+                stateString += '-1,1|';
+            } else{
+                stateString += '-1,-1|';
+            }
+
         }
         else {
-            stateString += visible[i*2].toFixed(2) + ',';
-            stateString += visible[i*2+1].toFixed(2) + '|';
+            stateString += visible[i*2].toFixed(0) + ',';
+            stateString += visible[i*2+1].toFixed(0) + '|';
         }
     }
     return stateString;

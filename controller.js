@@ -35,7 +35,7 @@ function Pillar(x)
 Controller.init = function()
 {
 	while(pillars.length > 0) pillars.pop();
-	for(var i = 0, x = k_Gap * 4; i < k_N; ++i) {
+	for(var i = 0, x = k_Gap * 1; i < k_N; ++i) {
 		pillars.push(new Pillar(x));
 		x += pillars[i].w + k_Gap;
 	}

@@ -39,7 +39,7 @@
 		<!-- <div id="info"><a href="http://threejs.org" target="_blank">three.js</a> - webgl cube refraction demo. skybox by <a href="http://www.zfight.com/" target="_blank">Jochum Skoglund</a></div> -->
 
 		<div id="footer">
-			1: game, 2: debug, 3: training </br> 
+			1: game, 2: debug, 3: training </br>
 			press <strong>space</strong> to flap wings
 		</div>
 
@@ -74,7 +74,7 @@
 			document.addEventListener('mousemove', onDocumentMouseMove, false );
 
 			init();
-			animateLoop1();
+			animateLoop3();
 
 			function init() {
 
@@ -110,7 +110,7 @@
 
 				var elapseTime = 0;
 
-				function myTimer() { 
+				function myTimer() {
 
 					elapseTime += delta;
 
@@ -126,6 +126,7 @@
 			}
 
 			function animateLoop3() { // No response
+				state = STATUS.LEARNING;
 
 				var delta = 0.0166666;
 
@@ -149,7 +150,7 @@
 						Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						break;
 					case STATUS.GAME ://game
-						Controller.move(delta);	
+						Controller.move(delta);
 						var hasDie = Controller.collision();
 						Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						if (hasDie){
@@ -188,7 +189,7 @@
 							Controller.init();			// start over
 						} else {
 							//Graphics.update(state, mouseX, mouseY, delta, elapseTime, pillars, bird);
-							//Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
+							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						}
 						break;
 					case STATUS.SHOWTIME ://showtime
