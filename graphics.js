@@ -284,16 +284,9 @@ var Graphics = ( function () {
 		function p(x) {
 			if (x == null) return "NaN";
 			return x.toFixed(2);
-		}
-		str  = '(' + p(visible[0])	+ ', ' + p(visible[1])	+ ')  ';
-		str += '(' + p(visible[4])	+ ', ' + p(visible[5])	+ ')  ';
-		str += '(' + p(visible[8])	+ ', ' + p(visible[9])	+ ')  ';
-		str += '(' + p(visible[12]) + ', ' + p(visible[13]) + ')<br>';
-		str += '(' + p(visible[2])	+ ', ' + p(visible[3])	+ ')  ';
-		str += '(' + p(visible[6])	+ ', ' + p(visible[7])	+ ')  ';
-		str += '(' + p(visible[10]) + ', ' + p(visible[11]) + ')  ';
-		str += '(' + p(visible[14]) + ', ' + p(visible[15]) + ')<br>';		
-		str += 'score = ' + score + ', max = ' + max_score + '<br>';
+		}		
+		var str = 'current score = ' + curScore + ', max score = ' + maxScore + '<br>';
+		str += 'generation = ' + generation + '<br>';
 		Graphics.setStatus(str);
 		if (Math.round(elapseTime*10) % 10 == 0) {
 			Graphics.setLog('...');

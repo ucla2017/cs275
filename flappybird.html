@@ -63,8 +63,7 @@
 			var STATUS = {};
 			STATUS.MENU = 0, STATUS.GAME = 1, STATUS.DEBUG = 2, STATUS.LEARNING = 3, STATUS.SHOWTIME = 4;
 			var state = STATUS.MENU;	//state of the game(0: menu, 1: game, 2: debug, 3: learning, 4: showtime)
-			var mouseX = 0, mouseY = 0;
-			var oldVisible = [16];	//what the bird saw
+			var mouseX = 0, mouseY = 0, generation = 0;
 
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
@@ -75,13 +74,10 @@
 			animateLoop1();
 
 			function init() {
-
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
-
 				Controller.init();
 				Graphics.init( container, bird, pillars);
-
 				window.addEventListener( 'resize', Graphics.onWindowResize, false );
 				document.addEventListener( 'keydown', onKeyDown, false );
 			}
@@ -92,35 +88,22 @@
 			}
 
 			function animateLoop1() {
-
-				requestAnimationFrame( animateLoop1 );
-
+				requestAnimationFrame(animateLoop1);
 				var delta = clock.getDelta();
 				var elapseTime = clock.getElapsedTime();
-
 				animate(delta, elapseTime);
-
 			}
 
 			function animateLoop2() {
-
 				var delta = 0.0166666;
-
 				var elapseTime = 0;
-
 				function myTimer() {
-
 					elapseTime += delta;
-
 					animate(delta, elapseTime);
 					//alert(delta.toFixed(2) + ", " + elapseTime.toFixed(2));
-
-					setTimeout(myTimer, 100);
-
+					setTimeout(myTimer, 10);
 				}
-
 				myTimer(delta, elapseTime);
-
 			}
 
 			function animateLoop3() { // No response
@@ -140,7 +123,7 @@
 						Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						break;
 					case STATUS.GAME ://game
-						Controller.move(delta);												
+						Controller.move(delta);
 						if (Controller.collision()){
 							state = 0;//back to menu
 							console.log('Die');
@@ -149,9 +132,9 @@
 							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						break;
 					case STATUS.DEBUG ://debug
-						Controller.perception();		//check visible
-						if (Learning.jump()) {			//has jumped?
-							bird.v = k_Vjump;//update bird's speed
+						Controller.perception();		//check visible						
+						if (Learning.jump(Controller.getCurView())) {			//has jumped?
+							bird.v = k_Vjump;					//update bird's speed
 							Graphics.flapWings();
 							Graphics.setLog('just jumped');
 						}
@@ -161,10 +144,8 @@
 						else							
 							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						break;
-					case STATUS.LEARNING: //learning						
-						for(var i = 0; i < 16; ++i)
-							oldVisible[i] = visible[i];
-						var jump = Learning.jump();
+					case STATUS.LEARNING: //learning							
+						var jump = Learning.jump(Controller.getCurView());
 						if (jump) {
 							bird.v = k_Vjump;
 							Graphics.flapWings();
@@ -173,10 +154,11 @@
 						Controller.move(delta);
 						Controller.perception();
 						var hasDie = Controller.collision();
-						Learning.train(oldVisible, jump, hasDie, visible);
+						Learning.train(Controller.getPreView(), jump, hasDie, Controller.getCurView());
 						if (hasDie){
 							console.log('Die');
 							Controller.init();			// start over
+							++generation;
 						} else
 							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						break;
@@ -207,8 +189,7 @@
 						Controller.init();
 						state = event.keyCode - 48;
 						break;
-					case 51://3:learning
-						alert("start training, in this process, no Graphics.update()");
+					case 51://3:learning						
 						Controller.init();						
 						state = event.keyCode - 48;
 						break;
