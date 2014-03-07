@@ -293,8 +293,6 @@ var Graphics = ( function () {
 		str += '(' + p(visible[6])	+ ', ' + p(visible[7])	+ ')  ';
 		str += '(' + p(visible[10]) + ', ' + p(visible[11]) + ')  ';
 		str += '(' + p(visible[14]) + ', ' + p(visible[15]) + ')<br>';		
-		str += 'bird.y = ' + bird.y.toFixed(2) + ', ';
-		str += 'pillars[0].x=' + pillars[0].x.toFixed(2) + ', ';
 		str += 'score = ' + score + ', max = ' + max_score + '<br>';
 		Graphics.setStatus(str);
 		if (Math.round(elapseTime*10) % 10 == 0) {

@@ -12,7 +12,6 @@
 				font-weight: bold;
 				overflow:hidden;
 			}
-
 			#info {
 				position: absolute;
 				top: 0px; width: 100%;
@@ -23,11 +22,9 @@
 				text-align:center;
 				z-index:1000;
 			}
-
 			a {
 				color: #ffffff;
 			}
-
 			#footer { width: 100%; margin: 2em auto; text-align: center; position: absolute; bottom: 0 }
 			strong { color: red }
 
@@ -54,9 +51,9 @@
 
 		<script src="graphics.js"></script>
 
-		<script src="controller.js"></script>
-
 		<script src="learning.js"></script>
+		
+		<script src="controller.js"></script>		
 
 		<script>
 
@@ -67,6 +64,7 @@
 			STATUS.MENU = 0, STATUS.GAME = 1, STATUS.DEBUG = 2, STATUS.LEARNING = 3, STATUS.SHOWTIME = 4;
 			var state = STATUS.MENU;	//state of the game(0: menu, 1: game, 2: debug, 3: learning, 4: showtime)
 			var mouseX = 0, mouseY = 0;
+			var oldVisible = [16];	//what the bird saw
 
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
@@ -74,7 +72,7 @@
 			document.addEventListener('mousemove', onDocumentMouseMove, false );
 
 			init();
-			animateLoop3();
+			animateLoop1();
 
 			function init() {
 
@@ -117,7 +115,7 @@
 					animate(delta, elapseTime);
 					//alert(delta.toFixed(2) + ", " + elapseTime.toFixed(2));
 
-					setTimeout(myTimer, 10);
+					setTimeout(myTimer, 100);
 
 				}
 
@@ -127,36 +125,28 @@
 
 			function animateLoop3() { // No response
 				state = STATUS.LEARNING;
-
 				var delta = 0.0166666;
-
-				var elapseTime = 0;
-
-				while (true) {
-
+				var elapseTime = 0;				
+				while (true) {				
 					elapseTime += delta;
-
 					animate(delta, elapseTime);
-
 				};
-
 			}
 
-			function animate(delta, elapseTime) {
-
+			function animate(delta, elapseTime) {				
 				switch (state) {
 					case STATUS.MENU ://menu
 						Graphics.menu();
 						Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						break;
 					case STATUS.GAME ://game
-						Controller.move(delta);
-						var hasDie = Controller.collision();
-						Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
-						if (hasDie){
+						Controller.move(delta);												
+						if (Controller.collision()){
 							state = 0;//back to menu
 							console.log('Die');
 						}
+						else
+							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						break;
 					case STATUS.DEBUG ://debug
 						Controller.perception();		//check visible
@@ -168,29 +158,27 @@
 						Controller.move(delta);			//update positions
 						if (Controller.collision()) //the bird died
 							state = 0;//back to menu
-						else
-							//Graphics.update(state, mouseX, mouseY, delta, elapseTime, pillars, bird);
+						else							
 							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						break;
-					case STATUS.LEARNING: //learning
-						var currentState = Controller.perception();
+					case STATUS.LEARNING: //learning						
+						for(var i = 0; i < 16; ++i)
+							oldVisible[i] = visible[i];
 						var jump = Learning.jump();
 						if (jump) {
 							bird.v = k_Vjump;
 							Graphics.flapWings();
 							Graphics.setLog('just jumped');
-						}
+						}						
 						Controller.move(delta);
-						var newState = Controller.perception();
+						Controller.perception();
 						var hasDie = Controller.collision();
-						Learning.train(currentState, jump, hasDie, newState);
+						Learning.train(oldVisible, jump, hasDie, visible);
 						if (hasDie){
 							console.log('Die');
 							Controller.init();			// start over
-						} else {
-							//Graphics.update(state, mouseX, mouseY, delta, elapseTime, pillars, bird);
+						} else
 							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
-						}
 						break;
 					case STATUS.SHOWTIME ://showtime
 						break;
@@ -221,7 +209,7 @@
 						break;
 					case 51://3:learning
 						alert("start training, in this process, no Graphics.update()");
-						Controller.init();
+						Controller.init();						
 						state = event.keyCode - 48;
 						break;
 					case 52://4:showtime

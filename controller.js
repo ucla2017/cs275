@@ -39,7 +39,8 @@ Controller.init = function()
 		pillars.push(new Pillar(x));
 		x += pillars[i].w + k_Gap;
 	}
-	bird.y = bird.v = score = died = 0;
+	bird.y = bird.v = score = 0;
+	Controller.perception();
 }
 
 //what the bird can see
@@ -72,8 +73,7 @@ Controller.perception = function perception()
 				break;
 			}
 		}
-	}
-	return visible;
+	}	
 }
 
 //update positions
