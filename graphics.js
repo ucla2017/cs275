@@ -19,6 +19,9 @@ var Graphics = ( function () {
 
 	var fovyLine1, fovyLine2;
 
+	var isDebugMode = false;
+	var debugScene = [];
+
 
 	var PillarHeight = 400;
 
@@ -89,7 +92,7 @@ var Graphics = ( function () {
       								}));
 			birdBox.scale.set( 1, 1, 1 );
 			birdBox.position.set(0, 0, 0);
-			scene.add( birdBox );
+			debugScene.push( birdBox );
 
 			// create fovy line
 			var fovyLen = 1000;
@@ -115,7 +118,8 @@ var Graphics = ( function () {
 				lineGeometry.vertices.push(p1, p2);
 				lineGeometry.dynamic = true;
 				line = new THREE.Line(lineGeometry, lineMat);
-				scene.add(line);
+				//scene.add(line);
+				debugScene.push( line );
 				return lineGeometry;
 			}
 
@@ -326,6 +330,17 @@ var Graphics = ( function () {
 
 	Graphics.setLog = function (text) {
 		document.getElementById('log').innerHTML = text;
+	};
+
+	Graphics.switchDebug = function (text) {
+		for (var i = 0, len = debugScene.length; i < len; i++) {
+			if (!isDebugMode) {
+				scene.add( debugScene[i] );
+			} else {
+				scene.remove( debugScene[i] );
+			}
+		}
+		isDebugMode = !isDebugMode;
 	};
 
 	return Graphics;
