@@ -20,7 +20,7 @@ mode
 
 task
 ------
-1. 0.5 second interval between two flaps
+1. 0.5 second interval between two flaps		(intervalHalfSecond check only for learning mode)
 2. texture of pillar
 3. effect of death: flash and shake
 4. second camera
