@@ -328,9 +328,6 @@ var Graphics = ( function () {
 		document.getElementById('log').innerHTML = text;
 	};
 
-	Graphics.menu = function () {
-	};
-
 	return Graphics;
 
 }() );

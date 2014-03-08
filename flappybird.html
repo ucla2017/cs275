@@ -36,42 +36,35 @@
 		<!-- <div id="info"><a href="http://threejs.org" target="_blank">three.js</a> - webgl cube refraction demo. skybox by <a href="http://www.zfight.com/" target="_blank">Jochum Skoglund</a></div> -->
 
 		<div id="footer">
-			1: game, 2: debug, 3: training </br>
-			press <strong>space</strong> to flap wings
+			<i>Mode</i> <strong>1</strong>:game <strong>2</strong>:training <strong>3</strong>:show time!</br>
+			<strong>space</strong>:flap wings <strong>d</strong>:debug
 		</div>
-
 		<div id="status"> status started...</div>
-
 		<div id="log"> log started...</div>
-
-
-		<script src="three.js/three.min.js"></script>
-
-		<script src="js/Detector.js"></script>
-
-		<script src="graphics.js"></script>
-
-		<script src="learning.js"></script>
 		
+		<script src="three.js/three.min.js"></script>
+		<script src="js/Detector.js"></script>
+		<script src="graphics.js"></script>
+		<script src="learning.js"></script>		
 		<script src="controller.js"></script>		
 
 		<script>
-
-			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+			if (!Detector.webgl) Detector.addGetWebGLMessage();
 			var container;
 			var clock = new THREE.Clock();
 			var STATUS = {};
-			STATUS.MENU = 0, STATUS.GAME = 1, STATUS.DEBUG = 2, STATUS.LEARNING = 3, STATUS.SHOWTIME = 4;
-			var state = STATUS.LEARNING;	//state of the game(0: menu, 1: game, 2: debug, 3: learning, 4: showtime)
+			STATUS.MENU = 0, STATUS.GAME = 1, STATUS.LEARNING = 2, STATUS.SHOWTIME = 3;
+			var state = STATUS.MENU;	//state of the game(0: menu, 1: game, 2: learning, 3: showtime)			
 			var mouseX = 0, mouseY = 0, generation = 0;
-
+			var GENERATION = 10000, SCORE = 200;	//Threshold for quick training
+			
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
 
 			document.addEventListener('mousemove', onDocumentMouseMove, false );
 
 			init();
-			animateLoop3();
+			animateLoopTime();			
 
 			function init() {
 				container = document.createElement( 'div' );
@@ -79,7 +72,7 @@
 				Controller.init();
 				Graphics.init( container, bird, pillars);
 				window.addEventListener( 'resize', Graphics.onWindowResize, false );
-				document.addEventListener( 'keydown', onKeyDown, false );
+				document.addEventListener( 'keydown', onKeyDown, false );				
 			}
 
 			function onDocumentMouseMove(event) {
@@ -87,13 +80,18 @@
 				mouseY = ( event.clientY - windowHalfY ) * 10;
 			}
 
-			function animateLoop1() {
-				requestAnimationFrame(animateLoop1);
+			function animateLoopTime() {
+				if (!isSwitchToNormalSpeed()) {
+					animateLoopFor();
+					console.log('animateLoopTime terminated');
+					return;
+				}
+				requestAnimationFrame(animateLoopTime);
 				var delta = clock.getDelta();
 				var elapseTime = clock.getElapsedTime();
 				animate(delta, elapseTime);
 			}
-
+/*
 			function animateLoop2() {
 				var delta = 0.0166666;
 				var elapseTime = 0;
@@ -105,20 +103,20 @@
 				}
 				myTimer(delta, elapseTime);
 			}
-
+*/
 			function isSwitchToNormalSpeed() {
-				return generation == 10000 || maxScore > 200;
+				return generation >= GENERATION || maxScore >= SCORE || state != STATUS.LEARNING;
 			}
 
-			function animateLoop3() { // No response
-				state = STATUS.LEARNING;
+			function animateLoopFor() { // No response
 				var delta = 0.0166666;
-				var elapseTime = 0;				
-				while (true) {				
+				var elapseTime = 0;
+				while(true) {		
 					elapseTime += delta;
 					animate(delta, elapseTime);
 					if (isSwitchToNormalSpeed()) {
-						animateLoop2();
+						animateLoopTime();
+						console.log('animateLoopFor terminated');
 						break;
 					}
 				};
@@ -126,32 +124,18 @@
 
 			function animate(delta, elapseTime) {				
 				switch (state) {
-					case STATUS.MENU ://menu
-						Graphics.menu();
+					case STATUS.MENU ://menu						
 						Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						break;
 					case STATUS.GAME ://game
 						Controller.move(delta);
 						if (Controller.collision()){
 							state = 0;//back to menu
-							console.log('Die');
+							console.log('Game Die');
 						}
 						else
 							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
-						break;
-					case STATUS.DEBUG ://debug
-						Controller.perception();		//check visible						
-						if (Learning.jump(Controller.getCurView())) {			//has jumped?
-							bird.v = k_Vjump;					//update bird's speed
-							Graphics.flapWings();
-							Graphics.setLog('just jumped');
-						}
-						Controller.move(delta);			//update positions
-						if (Controller.collision()) //the bird died
-							state = 0;//back to menu
-						else							
-							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
-						break;
+						break;					
 					case STATUS.LEARNING: //learning							
 						var jump = Learning.jump(Controller.getCurView());
 						if (jump) {
@@ -164,54 +148,53 @@
 						var hasDie = Controller.collision();
 						Learning.train(Controller.getPreView(), jump, hasDie, Controller.getCurView());
 						if (hasDie){
-							console.log('Die');
+							console.log('Learning Die');
 							Controller.init();			// start over
 							++generation;
-						} else
-							if (isSwitchToNormalSpeed()) Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
+						} else if (isSwitchToNormalSpeed()) 
+							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						break;
 					case STATUS.SHOWTIME ://showtime
-						break;
-					default:
+						Controller.perception();		//check visible
+						if (Learning.jump(Controller.getCurView())) { //has jumped?
+							bird.v = k_Vjump;					//update bird's speed
+							Graphics.flapWings();
+							Graphics.setLog('just jumped');
+						}
+						Controller.move(delta);			//update positions
+						if (Controller.collision()) //the bird died
+							state = 0;//back to menu
+						else
+							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						break;
 				}
 			}
 
 			function onKeyDown ( event ) {
-
 				switch (event.keyCode ) {
-					case 32: //space
-					case 70: //f: fly
+					case 32: 	//space: flap wings
 						bird.v = k_Vjump;
-						Graphics.flapWings();
-						Graphics.setLog('<strong>f</strong> key pressed');
+						Graphics.flapWings();						
 						break;
-					case 27://escape
-						state = 0;//back to menu
+					case 49:	//1:game
+						Controller.init();
+						state = event.keyCode - 48;						
 						break;
-					case 49://1:game
+					case 50:	//2:learning
+						GENERATION = prompt("skip the first K generations. K = ?", 0);
+						Controller.init();
+						state = event.keyCode - 48;						
+						break;
+					case 51:	//3:show time
 						Controller.init();
 						state = event.keyCode - 48;
 						break;
-					case 50://2:debug
-						Controller.init();
-						state = event.keyCode - 48;
+					case 68: 	//d: switch debug mode
+						//Graphics.switchDebug();
 						break;
-					case 51://3:learning						
-						Controller.init();						
-						state = event.keyCode - 48;
-						break;
-					case 52://4:showtime
-						Controller.init();
-						state = event.keyCode - 48;
-						break;
-					case 68: //d
-						//dirLight.visible = !dirLight.visible;
-					break;
 				}
 			}
 
 		</script>
-
 	</body>
 </html>
