@@ -27,7 +27,7 @@ var bird = new Bird(0, 2, 1, 0, 60);
 function Pillar(x)
 {
 	this.x = x;
-	this.y = 0;//(Math.random() - 0.5) * 10;
+	this.y = (Math.random() - 0.5) * 0.1;
 	this.w = 5;		//fixed width
 	this.h = 8;		//fixed height of the hole
 }

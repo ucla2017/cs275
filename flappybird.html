@@ -62,7 +62,7 @@
 			var clock = new THREE.Clock();
 			var STATUS = {};
 			STATUS.MENU = 0, STATUS.GAME = 1, STATUS.DEBUG = 2, STATUS.LEARNING = 3, STATUS.SHOWTIME = 4;
-			var state = STATUS.MENU;	//state of the game(0: menu, 1: game, 2: debug, 3: learning, 4: showtime)
+			var state = STATUS.LEARNING;	//state of the game(0: menu, 1: game, 2: debug, 3: learning, 4: showtime)
 			var mouseX = 0, mouseY = 0, generation = 0;
 
 			var windowHalfX = window.innerWidth / 2;
@@ -71,7 +71,7 @@
 			document.addEventListener('mousemove', onDocumentMouseMove, false );
 
 			init();
-			animateLoop1();
+			animateLoop3();
 
 			function init() {
 				container = document.createElement( 'div' );
@@ -101,9 +101,13 @@
 					elapseTime += delta;
 					animate(delta, elapseTime);
 					//alert(delta.toFixed(2) + ", " + elapseTime.toFixed(2));
-					setTimeout(myTimer, 10);
+					setTimeout(myTimer, delta * 1000);
 				}
 				myTimer(delta, elapseTime);
+			}
+
+			function isSwitchToNormalSpeed() {
+				return generation == 10000 || maxScore > 200;
 			}
 
 			function animateLoop3() { // No response
@@ -113,6 +117,10 @@
 				while (true) {				
 					elapseTime += delta;
 					animate(delta, elapseTime);
+					if (isSwitchToNormalSpeed()) {
+						animateLoop2();
+						break;
+					}
 				};
 			}
 
@@ -160,7 +168,7 @@
 							Controller.init();			// start over
 							++generation;
 						} else
-							Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
+							if (isSwitchToNormalSpeed()) Graphics.update(mouseX, mouseY, delta, elapseTime, pillars, bird);
 						break;
 					case STATUS.SHOWTIME ://showtime
 						break;
