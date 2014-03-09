@@ -7,7 +7,8 @@ var Graphics = ( function () {
 	var cameraCube, sceneCube;
 
 	var mesh, lightMesh;
-	var spheres = [];
+	var columsUp = [];
+	var columsDown = [];
 	var birdBox;
 
 	var morphs = [];
@@ -21,6 +22,9 @@ var Graphics = ( function () {
 
 	var isDebugMode = false;
 	var debugScene = [];
+
+	var CR = 16.4;
+	var CH = 6.4;
 
 
 	var PillarHeight = 400;
@@ -47,44 +51,78 @@ var Graphics = ( function () {
 			var textureCube = THREE.ImageUtils.loadTextureCube( urls, new THREE.CubeRefractionMapping() );
 			var material = new THREE.MeshBasicMaterial( { color: 0xffffff, envMap: textureCube, refractionRatio: 0.95 } );
 			var material2 = new THREE.MeshPhongMaterial( { ambient: 0x4EB81A, color: 0x4EB81A, specular: 0x4EB81A, shininess: 30, shading: THREE.FlatShading } );
+			
 
-			createCylinders(pillars, material2);
+			var columGeometry;
+			var columMaterial;
 
-			function createCylinders(pillars, material) {
-				
+			new THREE.JSONLoader().load( "models/greeceColum.js", function( geometry, materials ) {
+				//var material = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0xffffff, shininess: 20, morphTargets: true, morphNormals: true, vertexColors: THREE.FaceColors, shading: THREE.FlatShading } );
+				//var material = new THREE.MeshLambertMaterial({color: 0x55B663});
+				//var material = new THREE.MeshLambertMaterial({color: 0xffffff});
+				columGeometry = geometry;
+				columMaterial = new THREE.MeshFaceMaterial(materials);
+
+				createCylinders(pillars);
+
+				updateCylinders(pillars);
+			});
+
+			function createCylinders(pillars) {
 
 				for ( var i = 0; i < pillars.length; i ++ ) {
 
 					var p = pillars[ i ];
 
-					makeOneCylinder(material);
+					makeOneCylinder(columsUp, Math.PI);
 
-					makeOneCylinder(material);					
+					makeOneCylinder(columsDown, 0);
 					
 				}
 
-				function makeOneCylinder(material) {
+				function makeOneCylinder(colums, rotate) {
 
-					var radiusTop = 1;
-					var segmentsRadius = 50;
-					var segmentsHeight = 50;
-					var radiusBottom = radiusTop;
-					var height = 1;
+					// var radiusTop = 1;
+					// var segmentsRadius = 50;
+					// var segmentsHeight = 50;
+					// var radiusBottom = radiusTop;
+					// var height = 1;
 
-					var geometry = new THREE.CylinderGeometry( radiusTop, radiusBottom, height, segmentsRadius, segmentsHeight);
+					// var geometry = new THREE.CylinderGeometry( radiusTop, radiusBottom, height, segmentsRadius, segmentsHeight);
 
-					var mesh = new THREE.Mesh( geometry, material );
+					// var mesh = new THREE.Mesh( geometry, material );
 
-					mesh.scale.set(1, 1, 1);
+					// mesh.scale.set(1, 1, 1);
+
+					// scene.add( mesh );
+
+					// spheres.push( mesh );
+
+
+					
+					// mesh = new THREE.Mesh( geometry, material );
+					// mesh.position.set(0,0,0);
+					// mesh.scale.set(1, 6.4, 1);
+					// scene.add( mesh );
+
+					// var radius = 1;
+					// var height = 1;
+
+					var mesh = new THREE.Mesh(columGeometry, columMaterial);
+					mesh.position.set(0,0,0);
+					mesh.rotation.x = rotate;
+					mesh.scale.set(CR, CR, CR); // scale CR = 16.8 to make diameter unit 1, height CH = 6.4
+
+					// columMesh.castShadow = true;
+					// columMesh.receiveShadow = true;
 
 					scene.add( mesh );
-
-					spheres.push( mesh );
+					colums.push( mesh );
 				}
 			}
 
 
-			updateCylinders(pillars);
+			
 
 			birdBox = new THREE.Mesh(new THREE.CubeGeometry(bird.w, bird.h, bird.h), new THREE.MeshBasicMaterial({
         							wireframe: true,
@@ -144,12 +182,23 @@ var Graphics = ( function () {
 			}
 
 			// LIGHTS
-
 			hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
 			hemiLight.color.setHSL( 1, 1, 1 );
 			hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
 			hemiLight.position.set( 0, 500, 0 );
-			scene.add( hemiLight );
+			//scene.add( hemiLight );
+
+
+			var light1 = new THREE.PointLight( 0xffffff, 2, 400);
+			var light2 = new THREE.PointLight( 0xffffff, 2, 400);
+			var light3 = new THREE.PointLight( 0xffffff);
+			light1.position.set( 50, 0, 0 );
+			light2.position.set( 0, 10, -10 );
+			light3.position.set( -100, 0, 0 );
+			//scene.add( light1 );
+			//scene.add( light2 );
+			scene.add( light3 );
+			scene.add( new THREE.AmbientLight( 0x6B6B6A ) );
 
 			// MORPHS
 			function morphColorsToFaceColors( geometry ) {
@@ -194,9 +243,21 @@ var Graphics = ( function () {
 
 				scene.add( meshAnim );
 				morphs.push( meshAnim );
-
 				
 			} );
+
+			
+
+			// var daeLoader = new THREE.ColladaLoader();
+
+			// daeLoader.load( "models/untitled.dae", function( collada ) {
+
+			// 	var dae = collada.scene;
+			// 	dae.position = birdBox.position;
+			// 	dae.scale.set(50, 50, 50);
+			// 	dae.updateMatrix();
+			// 	scene.add( dae );
+			// } );
 
 			//
 			renderer = new THREE.WebGLRenderer();
@@ -221,24 +282,26 @@ var Graphics = ( function () {
 	};
 
 	function updateCylinders(pillars) {
+
+		if (columsUp.length + columsDown.length < pillars.length * 2) return;
+
 		for ( var i = 0; i < pillars.length; i ++ ) {
 
 			var p = pillars[ i ];
+			var r = p.w / 2 ;
 
-			var sphere1 = spheres[ i*2 ];
-			var sphere2 = spheres[ i*2 + 1 ];
+			var mesh1 = columsUp[ i ];
+			var mesh2 = columsDown[ i ];
 
-			var h1 = PillarHeight / 2 - p.y + p.h / 2;
-			sphere1.position.x = p.x + p.w / 2;
-			sphere1.position.y = p.y + p.h/2 + h1 / 2;
-			sphere1.position.z = 0;
-			sphere1.scale.set( p.w / 2, h1, p.w / 2 );
+			mesh1.position.x = p.x + p.w / 2;
+			mesh1.position.y = p.y + p.h/2 + r * CH / 2;
+			mesh1.position.z = 0;
+			mesh1.scale.set( r * CR, r * CR, r * CR);
 
-			var h2 = p.y - p.h / 2 + PillarHeight / 2;
-			sphere2.position.x = p.x + p.w / 2;
-			sphere2.position.y = p.y - p.h/2 - h2 / 2;
-			sphere2.position.z = 0;
-			sphere2.scale.set( p.w / 2, h2, p.w / 2 );
+			mesh2.position.x = p.x + p.w / 2;
+			mesh2.position.y = p.y - p.h/2 - r * CH / 2;
+			mesh2.position.z = 0;
+			mesh2.scale.set( r * CR, r * CR, r * CR);
 
 		}
 	}
