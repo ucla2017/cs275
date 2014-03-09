@@ -55,9 +55,10 @@
 			var clock = new THREE.Clock();
 			var STATUS = {};
 			STATUS.MENU = 0, STATUS.GAME = 1, STATUS.LEARNING = 2, STATUS.SHOWTIME = 3;
+			var GENERATION = 10000, SCORE = 200, INTERVAL = 0.3;	//Threshold for quick training
 			var state = STATUS.MENU;	//state of the game(0: menu, 1: game, 2: learning, 3: showtime)			
-			var mouseX = 0, mouseY = 0, generation = 0;
-			var GENERATION = 10000, SCORE = 200;	//Threshold for quick training
+			var mouseX = 0, mouseY = 0, generation = 0, interval = INTERVAL;
+			
 			
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
@@ -122,6 +123,17 @@
 					}
 				};
 			}
+			
+			function intervalSecond(jump, delta) {				
+				if (jump) {
+					if (interval < INTERVAL) 
+						jump = false;
+					else
+						interval = 0;
+				}
+				interval += delta;
+				return jump;				
+			}
 
 			function animate(delta, elapseTime) {				
 				switch (state) {
@@ -139,6 +151,7 @@
 						break;					
 					case STATUS.LEARNING: //learning							
 						var jump = Learning.jump(Controller.getCurView());
+						jump = intervalSecond(jump, delta);
 						if (jump) {
 							bird.v = k_Vjump;
 							Graphics.flapWings();
