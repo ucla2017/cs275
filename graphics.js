@@ -191,14 +191,14 @@ var Graphics = ( function () {
 
 			var light1 = new THREE.PointLight( 0xffffff, 2, 400);
 			var light2 = new THREE.PointLight( 0xffffff, 2, 400);
-			var light3 = new THREE.PointLight( 0xffffff);
+			var light3 = new THREE.PointLight( 0xB38915, 1, 0.0);
 			light1.position.set( 50, 0, 0 );
 			light2.position.set( 0, 10, -10 );
 			light3.position.set( -100, 0, 0 );
 			//scene.add( light1 );
 			//scene.add( light2 );
 			scene.add( light3 );
-			scene.add( new THREE.AmbientLight( 0x6B6B6A ) );
+			scene.add( new THREE.AmbientLight( 0xA19E97 ) );
 
 			// MORPHS
 			function morphColorsToFaceColors( geometry ) {
