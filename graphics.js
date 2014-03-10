@@ -294,14 +294,14 @@ var Graphics = ( function () {
 			var mesh2 = columsDown[ i ];
 
 			mesh1.position.x = p.x + p.w / 2;
-			mesh1.position.y = p.y + p.h/2 + r * CH / 2;
+			mesh1.position.y = p.y + p.h/2 + r * CH;
 			mesh1.position.z = 0;
-			mesh1.scale.set( r * CR, r * CR, r * CR);
+			mesh1.scale.set( r * CR, r * CR * 2, r * CR);
 
 			mesh2.position.x = p.x + p.w / 2;
-			mesh2.position.y = p.y - p.h/2 - r * CH / 2;
+			mesh2.position.y = p.y - p.h/2 - r * CH;
 			mesh2.position.z = 0;
-			mesh2.scale.set( r * CR, r * CR, r * CR);
+			mesh2.scale.set( r * CR, r * CR * 2, r * CR);
 
 		}
 	}
