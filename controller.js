@@ -1,6 +1,7 @@
 //constant
 var k_N = 20;			//# of pillars
 var k_Gap = 12;			//the gap between pillars
+var k_Dissapear = -60;	//the pillar should dissapear when it's too far from the bird
 var k_Gravity = -100;	//gravity
 var k_Vjump = 32;		//constant velocity on Y-axis of the bird
 var k_Vmove = -10;		//constant velocity on X-axis of pillars
@@ -30,6 +31,7 @@ function Pillar(x)
 	this.y = (Math.random() - 0.5) * 2;
 	this.w = 5;		//fixed width
 	this.h = 8;		//fixed height of the hole
+	this.pass = false;		//whether the pillar has been passed by the bird
 }
 
 //initialization before a new game
@@ -50,8 +52,9 @@ Controller.perception = function perception()
 	//save the last view, cannot use preView:=curView directly, since it will copy pointer which is incorrect
 	for(var i = 0; i < 16; ++i) preView[i] = curView[i];
 	//percept the new view
-	var first = 0, second = 1;
-	if (pillars[0].x + pillars[0].w <= 0) first = 1, second = 2;
+	var first = 0;			// the first pillar the bird can see
+	while(pillars[first].x + pillars[first].w <= 0) ++first;
+	var second = first + 1;	// the second pillar the bird can see
 	//initial value
 	curView[0]  = curView[2]  = pillars[first].x;
 	curView[4]  = curView[6]  = pillars[first].x + pillars[first].w;
@@ -96,12 +99,14 @@ Controller.move = function move(delta)
 	bird.y += delta * (bird.v + k_Gravity * delta / 2);	//s = vt + att/2
 	bird.v += delta * k_Gravity;
 	//update the pillars
-	for(var i = 0; i < k_N; ++i)
+	for(var i = 0; i < k_N; ++i) {
 		pillars[i].x += delta * k_Vmove;
-	while(pillars.length > 0 && pillars[0].x + pillars[0].w <= -bird.w) {
-		pillars.shift();
-		++curScore;
+		if (!pillars[i].pass && pillars[i].x + pillars[i].w <= -bird.w) {
+			pillars[i].pass = true;
+			++curScore;
+		}
 	}
+	while(pillars.length > 0 && pillars[0].x + pillars[0].w <= k_Dissapear) pillars.shift();		
 	if (pillars.length == 0) pillars.push(new Pillar(k_Gap * 4));
 	for(var i = pillars.length; i < k_N; ++i)
 		pillars.push(new Pillar(pillars[i-1].x + pillars[i-1].w + k_Gap));
@@ -110,10 +115,10 @@ Controller.move = function move(delta)
 
 //collision detection, return true if the bird hit a pillar
 Controller.collision = function collision()
-{
-	//if (bird.y < -30 || bird.y > 30) return true;
+{	
 	for(var i = 0; i < k_N; ++i) {
 		if (pillars[i].x > 0) break;	//bird body: (-w, y-h) to (0, y)
+		if (pillars[i].pass) continue;				//already passed this one
 		if (bird.y >= pillars[i].y + pillars[i].h/2) return true;			//collapse the upper pillar
 		if (bird.y - bird.h <= pillars[i].y - pillars[i].h/2) return true;	//collapse the lower pillar
 	}
