@@ -25,10 +25,26 @@ function Bird(y, w, h, v, fovy)
 }
 var bird = new Bird(0, 2, 1, 0, 60);
 
+
+var u = [1,-1,2,1,-3,1,3,4,0,-2];
+var hi = 0;
+var nexth = 0;
+var rr = 0;
+
 function Pillar(x)
 {
 	this.x = x;
-	this.y = (Math.random() - 0.5) * 2;
+	//this.y = u[(hi++) % 10];//(Math.random() - 0.5) * 2;
+	
+	var rand = (((++rr) + 1) % 17) % 7;
+	//var tmp = (Math.random() - 0.5) * 2;
+	var tmp = rand - 3;
+	if (nexth + tmp < -15 || nexth + tmp > 15) {
+		tmp = - tmp;
+	} 
+	this.y = nexth;
+	nexth = this.y + tmp;
+
 	this.w = 5;		//fixed width
 	this.h = 8;		//fixed height of the hole
 	this.pass = false;		//whether the pillar has been passed by the bird
@@ -65,22 +81,22 @@ Controller.perception = function perception()
 	curView[9]  = curView[13] = pillars[second].y + pillars[second].h/2 - bird.y;
 	curView[11] = curView[15] = pillars[second].y - pillars[second].h/2 - bird.y;
 	//visible check, x = -1 for invisible
-	var k = Math.tan(bird.fovy * Math.PI / 360);
-	for(var i = 14; i >= 0; i -= 2) {
-		//fovy check
-		if (curView[i] <= 0 || curView[i+1] > curView[i] * k || curView[i+1] < curView[i] * -k) {
-			curView[i] = -1;	//x = -1 for invisible
-			continue;
-		}
-		//block check
-		for(var j = 0; j < i - 2; j += 4) {
-			if (curView[j] > 0 &&
-				(curView[i+1] * curView[j] > curView[i] * curView[j+1] || curView[i+1] * curView[j] < curView[i] * curView[j+3])) {
-				curView[i] = -1;
-				break;
-			}
-		}
-	}	
+	// var k = Math.tan(bird.fovy * Math.PI / 360);
+	// for(var i = 14; i >= 0; i -= 2) {
+	// 	//fovy check
+	// 	if (curView[i] <= 0 || curView[i+1] > curView[i] * k || curView[i+1] < curView[i] * -k) {
+	// 		curView[i] = -1;	//x = -1 for invisible
+	// 		continue;
+	// 	}
+	// 	//block check
+	// 	for(var j = 0; j < i - 2; j += 4) {
+	// 		if (curView[j] > 0 &&
+	// 			(curView[i+1] * curView[j] > curView[i] * curView[j+1] || curView[i+1] * curView[j] < curView[i] * curView[j+3])) {
+	// 			curView[i] = -1;
+	// 			break;
+	// 		}
+	// 	}
+	// }	
 }
 
 Controller.getPreView = function getPreView()

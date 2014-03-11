@@ -58,10 +58,10 @@ QLearningController.prototype.convertState = function (view) {
     var stateString = "";
     for (var i = 0; i < 8; ++i) {
         if (view[i+i] == -1){
-            if (view[i+i+1] > 0)
-                stateString += '-1,1|';
-            else
-                stateString += '-1,-1|';           
+            // if (view[i+i+1] > 0)
+            //     stateString += '-1,1|';
+            // else
+            //     stateString += '-1,-1|';           
         }
         else {
             stateString += view[i+i].toFixed(0) + ',';
