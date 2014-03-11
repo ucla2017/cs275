@@ -116,6 +116,7 @@ Controller.move = function move(delta)
 //collision detection, return true if the bird hit a pillar
 Controller.collision = function collision()
 {	
+	if (bird.y < -30 || bird.y > 30) return true;
 	for(var i = 0; i < k_N; ++i) {
 		if (pillars[i].x > 0) break;	//bird body: (-w, y-h) to (0, y)
 		if (pillars[i].pass) continue;				//already passed this one
