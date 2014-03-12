@@ -64,8 +64,8 @@ QLearningController.prototype.convertState = function (view) {
             //     stateString += '-1,-1|';           
         }
         else {
-            stateString += view[i+i].toFixed(0) + ',';
-            stateString += view[i+i+1].toFixed(0) + '|';
+            stateString += view[i+i].toFixed(1) + ',';
+            stateString += view[i+i+1].toFixed(1) + '|';
         }
     }
     return stateString;

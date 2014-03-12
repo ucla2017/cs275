@@ -26,8 +26,8 @@ function Bird(y, w, h, v, fovy)
 var bird = new Bird(0, 2, 1, 0, 60);
 
 
-var u = [1,-1,2,1,-3,1,3,4,0,-2];
-var hi = 0;
+//var u = [1,-1,2,1,-3,1,3,4,0,-2];
+//var hi = 0;
 var nexth = 0;
 var rr = 0;
 
@@ -53,6 +53,8 @@ function Pillar(x)
 //initialization before a new game
 Controller.init = function()
 {
+	nexth = 0;
+	rr = 0;
 	while(pillars.length > 0) pillars.pop();
 	for(var i = 0, x = k_Gap; i < k_N; ++i) {
 		pillars.push(new Pillar(x));

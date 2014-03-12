@@ -67,7 +67,7 @@
 			document.addEventListener('mousemove', onDocumentMouseMove, false );
 
 			init();
-			animateLoopTime();			
+			animateLoop2();			
 
 			function init() {
 				elapseTime = 0;
@@ -91,7 +91,7 @@
 					return;
 				}
 				requestAnimationFrame(animateLoopTime);
-				var delta = clock.getDelta();
+				var delta = 0.0166666;
 				elapseTime += delta;
 				//alert(delta + '\n' + elapseTime);
 				animate(delta, elapseTime);
@@ -124,7 +124,7 @@
 					animate(delta, elapseTime);
 					if (isSwitchToNormalSpeed()) {
 						clock.getDelta();
-						animateLoopTime();
+						animateLoop2();
 						console.log('animateLoopFor terminated');
 						break;
 					}
