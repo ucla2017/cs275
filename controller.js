@@ -12,7 +12,7 @@ var maxScore = 0;		//max score of the game
 var pillars = [];		//the queue for pillars
 var curView = [16];		//what the bird can see in this frame for Learning
 var preView = [16];		//what the bird saw in the last frame for Learning
-
+var useFovy = false;
 var Controller = { REVISION: '01' };
 
 //an object is a function
@@ -82,23 +82,24 @@ Controller.perception = function perception()
 	curView[12] = curView[14] = pillars[second].x + pillars[second].w;
 	curView[9]  = curView[13] = pillars[second].y + pillars[second].h/2 - bird.y;
 	curView[11] = curView[15] = pillars[second].y - pillars[second].h/2 - bird.y;
+	if (!useFovy) return;
 	//visible check, x = -1 for invisible
-	// var k = Math.tan(bird.fovy * Math.PI / 360);
-	// for(var i = 14; i >= 0; i -= 2) {
-	// 	//fovy check
-	// 	if (curView[i] <= 0 || curView[i+1] > curView[i] * k || curView[i+1] < curView[i] * -k) {
-	// 		curView[i] = -1;	//x = -1 for invisible
-	// 		continue;
-	// 	}
-	// 	//block check
-	// 	for(var j = 0; j < i - 2; j += 4) {
-	// 		if (curView[j] > 0 &&
-	// 			(curView[i+1] * curView[j] > curView[i] * curView[j+1] || curView[i+1] * curView[j] < curView[i] * curView[j+3])) {
-	// 			curView[i] = -1;
-	// 			break;
-	// 		}
-	// 	}
-	// }	
+	var k = Math.tan(bird.fovy * Math.PI / 360);
+	for(var i = 14; i >= 0; i -= 2) {
+		//fovy check
+		if (curView[i] <= 0 || curView[i+1] > curView[i] * k || curView[i+1] < curView[i] * -k) {
+			curView[i] = -1;	//x = -1 for invisible
+			continue;
+		}
+		//block check
+		for(var j = 0; j < i - 2; j += 4) {
+			if (curView[j] > 0 &&
+				(curView[i+1] * curView[j] > curView[i] * curView[j+1] || curView[i+1] * curView[j] < curView[i] * curView[j+3])) {
+				curView[i] = -1;
+				break;
+			}
+		}
+	}	
 }
 
 Controller.getPreView = function getPreView()

@@ -37,7 +37,7 @@
 
 		<div id="footer">
 			<i>Mode</i> <strong>1</strong>:game <strong>2</strong>:training <strong>3</strong>:show time!</br>
-			<strong>space</strong>:flap wings <strong>d</strong>:debug
+			<strong>space</strong>:flap wings <strong>d</strong>:debug <strong>f</strong>:with fovy
 		</div>
 		<div id="status"> status started...</div>
 		<div id="log"> log started...</div>
@@ -67,7 +67,7 @@
 			document.addEventListener('mousemove', onDocumentMouseMove, false );
 
 			init();
-			animateLoop2();			
+			animateLoopTime();			
 
 			function init() {
 				elapseTime = 0;
@@ -124,7 +124,7 @@
 					animate(delta, elapseTime);
 					if (isSwitchToNormalSpeed()) {
 						clock.getDelta();
-						animateLoop2();
+						animateLoopTime();
 						console.log('animateLoopFor terminated');
 						break;
 					}
@@ -212,6 +212,11 @@
 						break;
 					case 68: 	//d: switch debug mode
 						Graphics.switchDebug();
+						break;
+					case 70: 	//f: with fovy
+						useFovy = !useFovy;
+						if (useFovy) Graphics.setLog('fovy on');
+						else Graphics.setLog('fovy off');
 						break;
 				}
 			}
