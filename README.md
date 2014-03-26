@@ -1,6 +1,6 @@
 Preview
 ==========
-http://54.193.73.58/
+http://jiangong01.github.io/cs275/demo/flappybird.html
 
 https://rawgithub.com/jiangong01/cs275/master/flappybird.html
 
