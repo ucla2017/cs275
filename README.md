@@ -1,3 +1,7 @@
+Project
+==========
+http://jiangong01.github.io/cs275/
+
 Preview
 ==========
 http://jiangong01.github.io/cs275/demo/flappybird.html
