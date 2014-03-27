@@ -31,8 +31,17 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
+
+<h3>
+<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Team</h3>
+<p>Hang Qi, Jian Gong, Lunbo Xu</p>
+
         <h3>
 <a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h3>
+
+<div>
+  <img src="images/ScreenShot.png" alt="screen shot" style="width:500px;display: block;margin: 20px auto">
+</div>
 
 <p>In this work, we present a reinforcement learning method to allow a artificial bird to survive in a randomly generated environment without collision with any obstacles by deciding when to flap the wings. The setting is based on a very popular mobile game called \textit{FlappyBird}. We implemented it in 3D with WebGL, making it easy for public access and experiments with browsers. The bird is given two different perception models: (1) instant fovy, (2) fovy with short-term memory. In both models, the perception state is represented by a $16\times 1$ vector, consisting of coordinates of the two pillars in front of the bird. A reinforcement learning algorithm Q-learning is used to learn a decision policy, powered by which the bird will be able to survive by repeatedly deciding which action to perform given its current perception state. The experiments show our Q-learning algorithm allows the bird to survive for more than 200 pillars.</p>
 
